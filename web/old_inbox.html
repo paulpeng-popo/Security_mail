@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="google-signin-client_id"
+        content="852787793793-6a445i2ptcdo7n0ia17islr0vsfhh2r4.apps.googleusercontent.com">
+    <title>Nmail Mailbox</title>
+    <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/inboxstyle.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="all-container">
+
+        <div class="topbar">
+	    <img class="logo" src="{{ url_for('static', filename='media/logo_nbg.png') }}">
+            <form class="search-bar" action="">
+                <input type="text" name="search" placeholder="Select attributes">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+            <div class="button-group">
+                <button id="DecryptButton" style="display: block;">Decrypt</button>
+                <button id="SendMailButton" style="display: block;">Compose</button>
+                <button id="SignOutButton" style="display: block;">Sign out</button>
+            </div>
+        </div>
+
+        <div class="submain">
+
+            <aside class="sidebar">
+                <div class="sidebar-content">
+                    <ul>
+                        <li class="active"><a href="#">Inbox<span></span></a></li>
+                        <li><a href="#">Important</a></li>
+                        <li><a href="#">Sent</a></li>
+                        <li><a href="#">Drafts</a></li>
+                        <li><a href="#">Trash</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <div id="mail-list" class="mail-list">
+                <div class="box-gap">
+                    <ul class="message-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.history.pushState({"html":"inbox.html","pageTitle":"Mailbox"},"", "/inbox");
+    </script>
+
+    <script src="{{ url_for('static', filename='js/inbox.js') }}"></script>
+    <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+
+</body>
+
+</html>
