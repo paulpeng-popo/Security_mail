@@ -8,8 +8,7 @@
     <title>Welcome to Nmail</title>
     <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/indexstyle.css') }}">
-    <script src="{{ url_for('static', filename='live2d/js/live2d.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 
 <body>
@@ -55,20 +54,7 @@
                 <p>Copyright of ISLab © 2021. All rights reserved</p>
             </div>
         </div>
-	<canvas class="live2d" id="live2d" width="350" height="400"></canvas>
     </div>
-
-    <script>
-	    //loadlive2d("live2d", "{{ url_for('static', filename='live2d/model/rem/model.json') }}");
-    </script>
-
-    <style>
-	.live2d {
-	    position: fixed;
-	    bottom: 0;
-	    right: 0;
-	}
-    </style>
 
     <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
 

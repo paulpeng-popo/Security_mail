@@ -142,8 +142,10 @@ def read_mail():
     if 'credentials' in session:
         creds = Credentials.from_authorized_user_info(session['credentials'], scopes=SCOPES)
         service = build('gmail', 'v1', credentials=creds)
+
         user_info = service.users().getProfile(userId='me').execute()
         emailAddress = user_info['emailAddress']
+        
         message_id = request.args.get('id')
         sender, subject, date_str, mail_body = get_Mailbody(service, message_id)
         return render_template("read.html", userAddress=emailAddress,
