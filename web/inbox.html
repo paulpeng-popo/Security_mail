@@ -8,7 +8,7 @@
     <title>Mailbox:~ {{ userAddress }}</title>
     <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/inbox.css') }}">
-    <link rel="stylesheet" href=" https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -26,15 +26,14 @@
                             <!-- BEGIN INBOX MENU -->
                             <div class="col-md-3">
                                 <img class="logo" src="{{ url_for('static', filename='media/logo_nbg.png') }}">
-                                <a class="btn btn-block btn-primary"
-                                   data-toggle="modal"
-                                   data-target="#compose-modal">
-                                   <i class="fa fa-pencil"></i>&nbsp;&nbsp;NEW MESSAGE</a>
+                                <a class="btn btn-block btn-primary" data-toggle="modal" data-target="#compose-modal">
+                                    <i class="fa fa-pencil"></i>&nbsp;&nbsp;NEW MESSAGE</a>
                                 <hr>
                                 <div>
                                     <ul class="nav nav-pills nav-stacked">
                                         <li class="header">Folders</li>
-                                        <li class="active"><a href="#"><i class="fa fa-inbox"></i> Inbox ({{ messagesTotal }})</a></li>
+                                        <li class="active"><a href="#"><i class="fa fa-inbox"></i> Inbox
+                                                ({{ messagesTotal }})</a></li>
                                         <li><a href="#"><i class="fa fa-star"></i> Starred</a></li>
                                         <li><a href="#"><i class="fa fa-bookmark"></i> Important</a></li>
                                         <li><a href="#"><i class="fa fa-mail-forward"></i> Sent</a></li>
@@ -71,13 +70,15 @@
                                     </div>
 
                                     <div class="col-md-6 search-form">
-                                        <form action="https://owenchen.cf/GetSearchToken" method="post" class="text-right">
+                                        <form action="https://owenchen.cf/GetSearchToken" method="post"
+                                            class="text-right">
                                             <div class="input-group">
                                                 <input name="query" type="text" class="form-control input-sm"
                                                     placeholder="Search by attributes">
                                                 <span class="input-group-btn">
                                                     <button type="submit" name="search"
-                                                        class="btn_ btn-primary btn-sm search"><i class="fa fa-search"></i></button></span>
+                                                        class="btn_ btn-primary btn-sm search"><i
+                                                            class="fa fa-search"></i></button></span>
                                             </div>
                                         </form>
                                     </div>
@@ -89,20 +90,23 @@
                                     <table class="table">
                                         <tbody>
                                             {% for mail in mailRows %}
-                                                <tr id="{{ mail.ID }}">
-												    <td class="action"><input name="a_mail" value="{{ mail.ID }}" type="checkbox" /></td>
-												    <td class="action"><i class="fa fa-star-o"></i></td>
-												    <td class="action"><i class="fa fa-bookmark-o"></i></td>
-												    <td class="name">{{ mail.From }}</td>
-												    <td class="subject"><a onclick="getMessageShow('{{ mail.ID }}')">{{ mail.Subject }}</a></td>
-												    <td class="time">{{ mail.Date }}</td>
-											    </tr>
+                                            <tr id="{{ mail.ID }}">
+                                                <td class="action"><input name="a_mail" value="{{ mail.ID }}"
+                                                        type="checkbox" /></td>
+                                                <td class="action"><i class="fa fa-star-o"></i></td>
+                                                <td class="action"><i class="fa fa-bookmark-o"></i></td>
+                                                <td class="name">{{ mail.From }}</td>
+                                                <td class="subject" style="cursor: pointer;"
+                                                    onclick="getMessageShow('{{ mail.ID }}')">
+                                                    {{ mail.Subject }}</td>
+                                                <td class="time">{{ mail.Date }}</td>
+                                            </tr>
                                             {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
 
-                                <ul class="pagination" style="margin: 0;">
+                                <!-- <ul class="pagination" style="margin: 0;">
                                     <li class="disabled"><a href="#">«</a></li>
                                     <li class="active"><a href="#">1</a></li>
                                     <li><a href="#">2</a></li>
@@ -110,7 +114,7 @@
                                     <li><a href="#">4</a></li>
                                     <li><a href="#">5</a></li>
                                     <li><a href="#">»</a></li>
-                                </ul>
+                                </ul> -->
                             </div>
                             <!-- END INBOX CONTENT -->
 
@@ -128,7 +132,8 @@
                                             <form action="https://owenchen.cf/encrypt" method="post">
                                                 <div class="modal-body">
                                                     <input type="hidden" id="token" name="Cookies_token" value="">
-                                                    <input type="hidden" id="refresh_token" name="Cookies_refresh_token" value="">
+                                                    <input type="hidden" id="refresh_token" name="Cookies_refresh_token"
+                                                        value="">
                                                     <div class="form-group">
                                                         <input name="to" type="email" class="form-control"
                                                             placeholder="To">
@@ -156,7 +161,8 @@
                                                     <button type="button" class="btn btn-default"
                                                         data-dismiss="modal"><i class="fa fa-times"></i>
                                                         Discard</button>
-                                                    <button id="send_button" type="submit" class="btn btn-primary pull-right"><i
+                                                    <button id="send_button" type="submit"
+                                                        class="btn btn-primary pull-right"><i
                                                             class="fa fa-envelope"></i> Send Message</button>
                                                 </div>
                                             </form>
@@ -173,61 +179,13 @@
         </div>
     </div>
 
-    <script>
-        
-        const send_btn = document.getElementById("send_button")
-        let t = document.getElementById("token")
-        let rt = document.getElementById("refresh_token")
-        send_btn.addEventListener("click", (event) => {
-		    allcookies = document.cookie.split(";");
-            for (let i = 0; i < allcookies.length; i++) {
-                thisCookie = allcookies[i].split("=");
-                cName = unescape(thisCookie[0]);
-                cValue = unescape(thisCookie[1]);
-                if (cName.indexOf("gmailapi_token") != -1) { t.value = cValue; }
-                if (cName.indexOf("gmailapi_refresh_token") != -1) { rt.value = cValue; }
-            }
-		});
-
-        function getMessageShow(msg_id) {
-            window.location.href = 'https://nsysunmail.ml/show?id=' + msg_id;
-            //axios.get('/show?id=' + msg_id)
-        }
-
-        function getSelectedCheckbox(name) {
-			const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
-			let values = [];
-			checkboxes.forEach((checkbox) => {
-				values.push(checkbox.value);
-			});
-			return values;
-		}
-
-		const decrypt = document.querySelector('#decrypt_button');
-		decrypt.addEventListener('click', (event) => {
-			ids = getSelectedCheckbox('a_mail');
-            alert(ids)
-		});
-    </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/inbox.js') }}"></script>
 
     <style>
-        @media screen and (min-width:1200px) {
-            .container {
-                margin-top: 30px;
-                width: 90%;
-            }
-
-            .row {
+        @media screen and (max-width: 767px) {
+            .search-form {
                 margin-top: 20px;
             }
-
-            .padding {
-                margin-bottom: 30px;
-            }
-        }
-
-        .subject a {
-            cursor: pointer;
         }
 
     </style>
