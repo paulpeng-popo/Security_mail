@@ -37,6 +37,7 @@
                                         <li><a href="#"><i class="fa fa-star"></i> Starred</a></li>
                                         <li><a href="#"><i class="fa fa-bookmark"></i> Important</a></li>
                                         <li><a href="#"><i class="fa fa-mail-forward"></i> Sent</a></li>
+                                        <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Logout</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -97,7 +98,7 @@
                                                 <td class="action"><i class="fa fa-bookmark-o"></i></td>
                                                 <td class="name">{{ mail.From }}</td>
                                                 <td class="subject" style="cursor: pointer;"
-                                                    onclick="getMessageShow('{{ mail.ID }}')">
+                                                    onclick="getMessageShow('{{ mail.ID }}', '{{ search_token }}')">
                                                     {{ mail.Subject }}</td>
                                                 <td class="time">{{ mail.Date }}</td>
                                             </tr>

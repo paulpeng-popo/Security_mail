@@ -5,7 +5,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
-import os, ast, time, json, hashlib
+import os, ast, time, json, hashlib, requests
 import Search, pybase64, re, calendar
 
 CLIENT_SECRETS_FILE = "/home/ubuntu/flask/secret.json"
@@ -79,26 +79,25 @@ def display_mailbox(service, classes="INBOX", search_token=None):
         message_id = message['id']
 
         headers = message['payload']['headers']
-        if len(headers) == 4 and search_token:
+        if len(headers) == 4 and search_token and search_token != "all":
             chead = next(item["value"] for item in headers if item["name"] == "Chead")
             search_list.append(chead)
             search_buffer.append({"headers": headers, "message_id": message_id})
-        elif not search_token:
+        elif not search_token or search_token == "all":
             mailRows.append(get_MailInfo(headers, message_id))
-            # if len(mailRows) >= 10: break
 
-    if search_token:
+    if search_token and search_token != "all":
         results = Search.search(search_list, search_token)
         for i, res in enumerate(results):
             if res:
                 mailRows.append(get_MailInfo(search_buffer[i]['headers'], search_buffer[i]['message_id']))
-            # if len(mailRows) >= 10: break
 
     return render_template("inbox.html", userAddress=emailAddress,
                                          messagesTotal=messagesTotal,
-                                         mailRows=mailRows            )
+                                         mailRows=mailRows,
+                                         search_token=search_token    )
 
-def get_MailInfo(headers, message_id):
+def get_MailInfo(headers, message_id, shrink=True):
     month_table = { month: index for index, month in enumerate(calendar.month_abbr) if month }
     week_table = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -127,13 +126,17 @@ def get_MailInfo(headers, message_id):
     offset = datetime.utcnow() + timedelta(hours=8) - correct_time
     yearOftoday = (datetime.utcnow() + timedelta(hours=8)).timetuple()[0]
     yearOfcorrect = correct_time.timetuple()[0]
-    if yearOftoday > yearOfcorrect: date_str = correct_time.strftime("%Y/%m/%d")
-    elif offset >= timedelta(hours=12): date_str = correct_time.strftime("%m/%d")
-    else: date_str = correct_time.strftime("%H:%M")
 
-    sender = re.sub("<.+@.+>", "", sender)
-    if sender[0] == '"': sender = sender[1:]
-    if sender[-2] == '"': sender = sender[:-2]
+    if shrink:
+        if yearOftoday > yearOfcorrect: date_str = correct_time.strftime("%Y/%m/%d")
+        elif offset >= timedelta(hours=12): date_str = correct_time.strftime("%m/%d")
+        else: date_str = correct_time.strftime("%H:%M")
+
+        sender = re.sub("<.+@.+>", "", sender)
+        if sender[0] == '"': sender = sender[1:]
+        if sender[-2] == '"': sender = sender[:-2]
+    else:
+        date_str = correct_time.strftime("%Y/%m/%d %A %H:%M")
 
     return {'Subject': subject, 'From': sender, 'Date': date_str, 'ID': message_id}
 
@@ -145,9 +148,19 @@ def read_mail():
 
         user_info = service.users().getProfile(userId='me').execute()
         emailAddress = user_info['emailAddress']
-        
+
         message_id = request.args.get('id')
-        sender, subject, date_str, mail_body = get_Mailbody(service, message_id)
+        sender, subject, date_str, mail_body, chead = get_Mailbody(service, message_id)
+
+        search_token = request.args.get('query')
+        if search_token != "None":
+            decrypt_data = { "mail": mail_body, "chead": chead, "token": search_token,
+                             "user": emailAddress, "sender": sender, "date": date_str }
+            result = requests.post('https://owenchen.cf/decrypt', json=decrypt_data)
+            if result.text:
+                print("Mail decrypt successfully.")
+                return redirect("https://owenchen.cf/show?random_key=" + result.text)
+
         return render_template("read.html", userAddress=emailAddress,
                                             SUBJECT=subject,
                                             SENDER=sender,
@@ -182,7 +195,7 @@ def send_mail():
     return "Method not allowed."
 
 @app.route('/logout')
-def clear_credentials():
+def logout():
     if 'credentials' in session:
         del session['credentials']
     resp = make_response(redirect(url_for("index")))
@@ -253,37 +266,13 @@ def set_Cookies(target_action):
     return resp
 
 def get_Mailbody(service, message_id, debug=False):
-    month_table = { month: index for index, month in enumerate(calendar.month_abbr) if month }
-    week_table = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
     mail = service.users().messages().get(userId='me', id=message_id).execute()
     if debug: return dict_visualize(mail)
 
     payload = mail['payload']
-    headers = payload['headers']
 
-    for item in headers:
-        if item['name'] == "Subject":
-            subject = item['value']
-        if item['name'] == "From":
-            sender = item['value']
-        if item['name'] == "Date":
-            date_str = item['value']
-
-    date_list = date_str.split()
-    diff = date_list[5]
-    time_str = list(map(int, (date_list[4]).split(":")))
-    year = int(date_list[3])
-    month = month_table[date_list[2]]
-    day = int(date_list[1])
-
-    if len(diff) < 5: diff = "+0800"
-    if diff[0] == "+": diff = 8 - int(diff[1:3])
-    else: diff = 8 + int(diff[1:3])
-    time = datetime(year, month, day, time_str[0], time_str[1], time_str[2])
-    correct_time = time + timedelta(hours=diff)
-    dayOfweek = week_table[correct_time.weekday()]
-    date_str = correct_time.strftime("%Y/%m/%d %A %H:%M")
+    chead = next((item["value"] for item in payload['headers'] if item["name"] == "Chead"), None)
+    header = get_MailInfo(payload['headers'], message_id, False)
 
     plain_text = False
     encoded_data = ""
@@ -324,4 +313,7 @@ def get_Mailbody(service, message_id, debug=False):
     if plain_text:
         body = body.replace("\r\n", "<br />")
 
-    return sender, subject, date_str, body
+    if chead:
+        return header['From'], header['Subject'], header['Date'], body, chead
+    else:
+        return header['From'], header['Subject'], header['Date'], body, None
