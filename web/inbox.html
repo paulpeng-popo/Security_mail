@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mailbox:~ {{ userAddress }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/inbox.css') }}">
+    <link rel="stylesheet" href=" https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body style="background-color: rgba(0, 0, 0, 0.7);">
+    <div class="container">
+        <div class="row">
+            <!-- BEGIN INBOX -->
+            <div class="col-md-12">
+                <div class="grid email">
+                    <div class="grid-body">
+                        <div class="row">
+                            <!-- BEGIN INBOX MENU -->
+                            <div class="col-md-3">
+                                <img class="logo" src="{{ url_for('static', filename='media/logo_nbg.png') }}">
+                                <a class="btn btn-block btn-primary"
+                                   data-toggle="modal"
+                                   data-target="#compose-modal">
+                                   <i class="fa fa-pencil"></i>&nbsp;&nbsp;NEW MESSAGE</a>
+                                <hr>
+                                <div>
+                                    <ul class="nav nav-pills nav-stacked">
+                                        <li class="header">Folders</li>
+                                        <li class="active"><a href="#"><i class="fa fa-inbox"></i> Inbox ({{ messagesTotal }})</a></li>
+                                        <li><a href="#"><i class="fa fa-star"></i> Starred</a></li>
+                                        <li><a href="#"><i class="fa fa-bookmark"></i> Important</a></li>
+                                        <li><a href="#"><i class="fa fa-mail-forward"></i> Sent</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- END INBOX MENU -->
+
+                            <!-- BEGIN INBOX CONTENT -->
+                            <div class="col-md-9">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label style="margin-right: 8px;" class="">
+                                            <div class="icheckbox_square-blue" style="position: relative;"><input
+                                                    type="checkbox" id="check-all" class="icheck"
+                                                    style="position: absolute; top: -20%; left: -20%; display: block; width: 140%; height: 140%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);"><ins
+                                                    class="iCheck-helper"
+                                                    style="position: absolute; top: -20%; left: -20%; display: block; width: 140%; height: 140%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);"></ins>
+                                            </div>
+                                        </label>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default dropdown-toggle"
+                                                data-toggle="dropdown">
+                                                Action <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a href="#">Mark as read</a></li>
+                                                <li><a href="#">Mark as unread</a></li>
+                                                <li><a href="#">Mark as important</a></li>
+                                                <li class="divider"></li>
+                                                <li><a href="#">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 search-form">
+                                        <form action="https://owenchen.cf/GetSearchToken" method="post" class="text-right">
+                                            <div class="input-group">
+                                                <input name="query" type="text" class="form-control input-sm"
+                                                    placeholder="Search by attributes">
+                                                <span class="input-group-btn">
+                                                    <button type="submit" name="search"
+                                                        class="btn_ btn-primary btn-sm search"><i class="fa fa-search"></i></button></span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="padding"></div>
+
+                                <div class="table-responsive" style="margin-bottom: 0;">
+                                    <table class="table">
+                                        <tbody>
+                                            {% for mail in mailRows %}
+                                                <tr id="{{ mail.ID }}">
+												    <td class="action"><input name="a_mail" value="{{ mail.ID }}" type="checkbox" /></td>
+												    <td class="action"><i class="fa fa-star-o"></i></td>
+												    <td class="action"><i class="fa fa-bookmark-o"></i></td>
+												    <td class="name">{{ mail.From }}</td>
+												    <td class="subject"><a onclick="getMessageShow('{{ mail.ID }}')">{{ mail.Subject }}</a></td>
+												    <td class="time">{{ mail.Date }}</td>
+											    </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <ul class="pagination" style="margin: 0;">
+                                    <li class="disabled"><a href="#">«</a></li>
+                                    <li class="active"><a href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#">5</a></li>
+                                    <li><a href="#">»</a></li>
+                                </ul>
+                            </div>
+                            <!-- END INBOX CONTENT -->
+
+                            <!-- BEGIN COMPOSE MESSAGE -->
+                            <div class="modal fade" id="compose-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-wrapper">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-blue">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-hidden="true">×</button>
+                                                <h4 class="modal-title"><i class="fa fa-envelope"></i> Compose New
+                                                    Message</h4>
+                                            </div>
+                                            <form action="https://owenchen.cf/encrypt" method="post">
+                                                <div class="modal-body">
+                                                    <input type="hidden" id="token" name="Cookies_token" value="">
+                                                    <input type="hidden" id="refresh_token" name="Cookies_refresh_token" value="">
+                                                    <div class="form-group">
+                                                        <input name="to" type="email" class="form-control"
+                                                            placeholder="To">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input name="cc" type="email" class="form-control"
+                                                            placeholder="Cc">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input name="bcc" type="email" class="form-control"
+                                                            placeholder="Bcc">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input name="subject" type="text" class="form-control"
+                                                            placeholder="Subject">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <textarea name="message" id="email_message" class="form-control"
+                                                            placeholder="Message" style="height: 120px;"></textarea>
+                                                    </div>
+                                                    <div class="form-group"> <input type="file" name="attachment">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default"
+                                                        data-dismiss="modal"><i class="fa fa-times"></i>
+                                                        Discard</button>
+                                                    <button id="send_button" type="submit" class="btn btn-primary pull-right"><i
+                                                            class="fa fa-envelope"></i> Send Message</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END COMPOSE MESSAGE -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END INBOX -->
+        </div>
+    </div>
+
+    <script>
+        
+        const send_btn = document.getElementById("send_button")
+        let t = document.getElementById("token")
+        let rt = document.getElementById("refresh_token")
+        send_btn.addEventListener("click", (event) => {
+		    allcookies = document.cookie.split(";");
+            for (let i = 0; i < allcookies.length; i++) {
+                thisCookie = allcookies[i].split("=");
+                cName = unescape(thisCookie[0]);
+                cValue = unescape(thisCookie[1]);
+                if (cName.indexOf("gmailapi_token") != -1) { t.value = cValue; }
+                if (cName.indexOf("gmailapi_refresh_token") != -1) { rt.value = cValue; }
+            }
+		});
+
+        function getMessageShow(msg_id) {
+            window.location.href = 'https://nsysunmail.ml/show?id=' + msg_id;
+            //axios.get('/show?id=' + msg_id)
+        }
+
+        function getSelectedCheckbox(name) {
+			const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
+			let values = [];
+			checkboxes.forEach((checkbox) => {
+				values.push(checkbox.value);
+			});
+			return values;
+		}
+
+		const decrypt = document.querySelector('#decrypt_button');
+		decrypt.addEventListener('click', (event) => {
+			ids = getSelectedCheckbox('a_mail');
+            alert(ids)
+		});
+    </script>
+
+    <style>
+        @media screen and (min-width:1200px) {
+            .container {
+                margin-top: 30px;
+                width: 90%;
+            }
+
+            .row {
+                margin-top: 20px;
+            }
+
+            .padding {
+                margin-bottom: 30px;
+            }
+        }
+
+        .subject a {
+            cursor: pointer;
+        }
+
+    </style>
+
+</body>
+
+</html>

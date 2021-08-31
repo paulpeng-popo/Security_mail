@@ -1,0 +1,306 @@
+body {
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    background: cornsilk;
+    font-family: sans-serif;
+}
+
+.all-container {
+    position: absolute;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    background-color: teal;
+}
+
+/* part1 css */
+
+.topbar {
+    position: relative;
+    width: 100%;
+    display: inline-flex;
+    overflow: hidden;
+    align-items: center;
+    padding: 40px;
+    background-color: rgba(255, 250, 220, 0.5);
+}
+
+.topbar .logo {
+    /* width: 250px; */
+    height: 80px;
+    border-radius: 12px;
+    margin-left: 5%;
+    cursor: pointer;
+}
+
+.topbar .search-bar {
+    width: auto;
+    margin-left: 4%;
+    align-items: center;
+    padding: 2px;
+    background: #fff;
+}
+
+.topbar .search-bar input[type=text] {
+    width: 250px;
+    padding: 10px;
+    font-size: 20px;
+    border: 1px solid grey;
+    background: #f1f1f1;
+    box-sizing: border-box;
+    transition: width 0.5s ease-in-out;
+}
+
+.topbar .search-bar input[type=text]:focus {
+    width: 450px;
+}
+
+.topbar .search-bar button {
+    width: 50px;
+    padding: 10px;
+    color: white;
+    font-size: 20px;
+    border: 1px solid grey;
+    box-sizing: border-box;
+    cursor: pointer;
+    background: rgba(250, 128, 114, 0.8);
+}
+
+.topbar .search-bar button:hover {
+    background: rgba(250, 128, 114, 1);
+}
+
+.topbar .search-bar::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.topbar .button-group {
+    position: absolute;
+    width: 30%;
+    margin-left: 60%;
+    display: flex;
+}
+
+.topbar .button-group button {
+    margin: 10px;
+    border: 2px yellowgreen;
+    border-radius: 15px;
+    color: white;
+    font-size: 20px;
+    padding: 10px 26px;
+    text-align: center;
+    background-color: hotpink;
+    transition-duration: 0.4s;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.topbar .button-group button:hover {
+    background-color: brown;
+}
+
+/* part2 css */
+
+.submain {
+    display: inline-flex;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.submain .sidebar {
+    position: absolute;
+    top: 160px;
+    bottom: 0;
+    width: 280px;
+    height: 560px;
+    padding: 20px 0;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.submain .sidebar .sidebar-content ul {
+    margin-left: 15px;
+    margin-right: 35px;
+}
+
+.submain .sidebar .sidebar-content ul li {
+    width: auto;
+    list-style: none;
+    margin: 10px;
+    float: left;
+    padding: 20px;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.submain .sidebar .sidebar-content ul li:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.submain .sidebar .sidebar-content ul li a {
+    color: white;
+    font-family: 'cinzel', sans-serif;
+    font-size: 20px;
+    font-weight: 300;
+    text-decoration: none;
+}
+
+.submain .mail-list {
+    position: absolute;
+    top: 160px;
+    left: 280px;
+    width: 1255px;
+    height: 560px;
+    background-image: url("../media/mail_back.jpg");
+    background-position: center;
+    background-attachment: fixed;
+    background-size: auto;
+    overflow-y: scroll;
+}
+
+.submain .mail-list .box-gap {
+    width: auto;
+    margin: 10px;
+    padding: 30px;
+    border-style: groove;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.message-list {
+    margin-left: 15px;
+    margin-right: 40px;
+    color: black;
+    counter-reset: counter 0;
+}
+
+.message-list li {
+    position: relative;
+    /* display: inline-block; */
+    display: block;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+    margin: 10px 50px 10px 40px;
+    border: 2px rgb(71, 221, 96) solid;
+    box-shadow: 5px 5px rgb(110, 110, 110);
+    padding-bottom: 20px;
+    counter-increment: counter 1
+}
+
+.message-list li:hover {
+    background: rgba(187, 187, 187, 0.5);
+    transition-duration: 0.1s;
+}
+
+.message-list li .index {
+    display: block;
+    font-size: 20px;
+    transform: translate(-50px, 62px);
+}
+
+.message-list li .index::before {
+    content: counter(counter);
+}
+
+.message-list li .encrypt {
+    font-weight: 600;
+    color: #555;
+}
+
+.message-list .group {
+    position: relative;
+    display: flex;
+    padding: 5px 10px;
+}
+
+.message-list .group div {
+    margin-right: 40px;
+}
+
+.modal {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    padding-top: 65px;
+    display: none;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+}
+
+.fade { animation: opac 1s } @keyframes opac{ from{ opacity: 0 } to{ opacity: 1 } }
+
+#message-modal .modal-dialog {
+    position: relative;
+    width: 70%;
+    height: 80%;
+    margin: auto;
+    padding: 20px 0;
+    border: 3px ridge gray;
+    background-color: #aef8c0;
+    overflow-y: auto;
+}
+
+.modal-content {
+    position: relative;
+    margin: auto;
+    width: 60%;
+    height: auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                0 6px 20px 0 rgba(0, 0, 0, 0.18);
+    border: 2px solid #888;
+    background-color: #888;
+}
+
+.close {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    border: none;
+    background-color: cornsilk;
+}
+
+.close:hover, .close:focus {
+    text-decoration: none;
+    background-color: bisque;
+    cursor: pointer;
+}
+
+.modal-header {
+    padding: 8px 20px;
+    background-color: cornsilk;
+    border-bottom: 5px solid #555;
+}
+
+.modal-title {
+    text-align: center;
+    color: #555;
+    margin: 0;
+    padding: 20px 0;
+    font-size: 30px;
+    font-weight: 800;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.modal-body {
+    margin: auto;
+    height: 480px;
+    padding: 20px 30px;
+    background-image: url("../media/mail_back.jpg");
+    background-position: center;
+    background-attachment: fixed;
+    background-size: auto;
+}
+
+iframe {
+    border: 0;
+    width: 100%;
+    min-height: 80%;
+    height: 480px;
+    display: flex;
+}
