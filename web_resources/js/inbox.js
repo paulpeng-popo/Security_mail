@@ -13,8 +13,8 @@ send_btn.addEventListener("click", (event) => {
     }
 });
 
-function getMessageShow(msg_id) {
-    window.location.href = 'https://nsysunmail.ml/show?id=' + msg_id;
+function getMessageShow(msg_id, token) {
+    window.location.href = 'https://nsysunmail.ml/show?id=' + msg_id + '&query=' + token;
 }
 
 // function getSelectedCheckbox(name) {
