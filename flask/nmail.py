@@ -1,5 +1,5 @@
 from flask import Flask, session, render_template, make_response
-from flask import jsonify, redirect, request, url_for
+from flask import jsonify, redirect, request, url_for, send_file
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import os, ast, time, json, hashlib, requests
 import Search, pybase64, re, calendar
 
+DOWNLOAD_PATH = "/home/ubuntu/flask/attachments/"
 CLIENT_SECRETS_FILE = "/home/ubuntu/flask/secret.json"
 SCOPES = ["https://mail.google.com/"]
 
@@ -150,12 +151,13 @@ def read_mail():
         emailAddress = user_info['emailAddress']
 
         message_id = request.args.get('id')
-        sender, subject, date_str, mail_body, chead = get_Mailbody(service, message_id)
+        sender, subject, date_str, mail_body, attachments, chead = get_Mailbody(service, message_id)
 
         search_token = request.args.get('query')
         if search_token != "None":
             decrypt_data = { "mail": mail_body, "chead": chead, "token": search_token,
-                             "user": emailAddress, "sender": sender, "date": date_str }
+                             "user": emailAddress, "sender": sender, "date": date_str,
+                             "attachments": attachments }
             result = requests.post('https://owenchen.cf/decrypt', json=decrypt_data)
             if result.text:
                 print("Mail decrypt successfully.")
@@ -165,8 +167,18 @@ def read_mail():
                                             SUBJECT=subject,
                                             SENDER=sender,
                                             DATE=date_str,
-                                            mail_body=mail_body)
+                                            mail_body=mail_body,
+                                            attachments=attachments)
     return redirect(url_for("index"))
+
+@app.route('/downloads/<path:filename>', methods=['GET'])
+def download(filename):
+    h = hashlib.blake2b(digest_size=8)
+    h.update(filename.encode('utf-8'))
+    hash_filename = h.hexdigest()
+
+    path = "/home/ubuntu/flask/attachments/" + hash_filename
+    return send_file(path, as_attachment=True, download_name=filename)
 
 @app.route('/send', methods=['POST'])
 def send_mail():
@@ -274,8 +286,10 @@ def get_Mailbody(service, message_id, debug=False):
     chead = next((item["value"] for item in payload['headers'] if item["name"] == "Chead"), None)
     header = get_MailInfo(payload['headers'], message_id, False)
 
+    attachments_list = []
     plain_text = False
     encoded_data = ""
+    image_cids = []
     if "text" in payload['mimeType']:
         if "plain" in payload['mimeType']:
             plain_text = True
@@ -293,15 +307,32 @@ def get_Mailbody(service, message_id, debug=False):
                         if "plain" in second_part['mimeType']: plain_text = True
                         else: plain_text = False
             if part['filename']:
+                attachment_name = part['filename']
                 if 'data' in part['body']:
-                    data = part['body']['data']
+                    att_data = part['body']['data']
                 else:
                     att_id = part['body']['attachmentId']
                     attachment = service.users().messages().attachments().get(userId='me', messageId=message_id, id=att_id).execute()
                     att_data = attachment['data']
+                    att_size = attachment['size']
 
+                attachments_list.append({ 'Name': attachment_name, 'Size': att_size, "File_url": "https://nsysunmail.ml/downloads/" + attachment_name })
                 file_data = pybase64.urlsafe_b64decode(att_data.encode('UTF-8'))
-                #return file_data
+
+                att_data = att_data.replace("-","+").replace("_","/")
+                for item in part['headers']:
+                    if item['name'] == 'Content-ID' and item['value']:
+                        image_cids.append({ "cid": item['value'], "type": part['mimeType'], "dataBASE64": att_data })
+                    elif item['name'] == 'X-Attachment-Id' and item['value']:
+                        image_cids.append({ "cid": item['value'], "type": part['mimeType'], "dataBASE64": att_data })
+
+                h = hashlib.blake2b(digest_size=8)
+                h.update(attachment_name.encode('utf-8'))
+                name = h.hexdigest()
+                filepath = DOWNLOAD_PATH + name
+                with open(filepath, "wb") as f:
+                    f.write(file_data)
+                f.close()
 
     if not encoded_data:
         return "Mail data fetch error."
@@ -313,7 +344,9 @@ def get_Mailbody(service, message_id, debug=False):
     if plain_text:
         body = body.replace("\r\n", "<br />")
 
-    if chead:
-        return header['From'], header['Subject'], header['Date'], body, chead
-    else:
-        return header['From'], header['Subject'], header['Date'], body, None
+    for item in image_cids:
+        be_sub = "cid:" + item['cid']
+        newSRC = "data:" + item['type'] + ";base64, " + item['dataBASE64']
+        body = re.sub(be_sub, newSRC, body)
+
+    return header['From'], header['Subject'], header['Date'], body, attachments_list, chead
