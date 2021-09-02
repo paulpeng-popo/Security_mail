@@ -33,6 +33,7 @@
                                                             points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
                                                         </polygon>
                                                     </svg></span></a>
+                                            <div></div>
                                             <span>{{ SUBJECT }}</span>
                                         </div>
                                         <div class="icons">
@@ -86,7 +87,6 @@
                                                 <div class="dropdown-menu" role="menu">
                                                     <a class="dropdown-item" href="#">Mark as read</a>
                                                     <a class="dropdown-item" href="#">Mark as unread</a>
-                                                    <a class="dropdown-item" href="#">Decrypt</a>
                                                     <div class="dropdown-divider"></div>
                                                     <a class="dropdown-item text-danger" href="#">Delete</a>
                                                 </div>
@@ -99,38 +99,22 @@
                             <div class="email-body">
                                 {{ mail_body|safe }}
                             </div>
-                            <!-- <div class="email-attachments">
-                                <div class="title">Attachments <span>(3 files, 12,44 KB)</span></div>
+                            <div class="email-attachments">
+                                <div class="title">Attachments <span>({{ attachments|length }} files, {{ "%.2f"|format(attachments|sum(attribute='Size')/1024) }} KB)</span></div>
                                 <ul>
-                                    <li><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    {% for att in attachments %}
+                                    <li><a href="{{ att.File_url }}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round"
                                                 class="feather feather-file">
                                                 <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z">
                                                 </path>
                                                 <polyline points="13 2 13 9 20 9"></polyline>
-                                            </svg> Reference.zip <span class="text-muted tx-11">(5.10 MB)</span></a>
+                                            </svg> {{ att.Name }} <span class="text-muted tx-11">({{ "%.2f"|format(att.Size/1024) }} KB)</span></a>
                                     </li>
-                                    <li><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round"
-                                                class="feather feather-file">
-                                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z">
-                                                </path>
-                                                <polyline points="13 2 13 9 20 9"></polyline>
-                                            </svg> Instructions.zip <span class="text-muted tx-11">(3.15
-                                                MB)</span></a></li>
-                                    <li><a href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round"
-                                                class="feather feather-file">
-                                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z">
-                                                </path>
-                                                <polyline points="13 2 13 9 20 9"></polyline>
-                                            </svg> Team-list.pdf <span class="text-muted tx-11">(4.5 MB)</span></a>
-                                    </li>
+                                    {% endfor %}
                                 </ul>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
                 </div>
