@@ -111,11 +111,18 @@ def get_MailInfo(headers, message_id, shrink=True):
             date_str = item['value']
 
     date_list = date_str.split()
-    diff = date_list[5]
-    time_str = list(map(int, (date_list[4]).split(":")))
-    year = int(date_list[3])
-    month = month_table[date_list[2]]
-    day = int(date_list[1])
+    try:
+        diff = date_list[5]
+        time_str = list(map(int, (date_list[4]).split(":")))
+        year = int(date_list[3])
+        month = month_table[date_list[2]]
+        day = int(date_list[1])
+    except Exception as error:
+        diff = date_list[4]
+        time_str = list(map(int, (date_list[3]).split(":")))
+        year = int(date_list[2])
+        month = month_table[date_list[1]]
+        day = int(date_list[0])
 
     if len(diff) < 5: diff = "+0800"
     if diff[0] == "+": diff = 8 - int(diff[1:3])
@@ -271,7 +278,7 @@ def set_Cookies(target_action):
     cookies = {}
     cookies['token'] = session['credentials']['token']
     cookies['refresh_token'] = session['credentials']['refresh_token']
-    expired_time = time.time()+30*60
+    expired_time = time.time()+60*60
     resp = make_response(target_action)
     resp.set_cookie(key='gmailapi_token', value=cookies['token'], expires=expired_time)
     resp.set_cookie(key='gmailapi_refresh_token', value=cookies['refresh_token'], expires=expired_time)

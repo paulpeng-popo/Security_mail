@@ -1,20 +1,17 @@
-const send_btn = document.getElementById("send_button")
-let t = document.getElementById("token")
-let rt = document.getElementById("refresh_token")
+function getMessageShow(msg_id, token) {
+    window.location.href = 'https://nsysunmail.ml/show?id=' + msg_id + '&query=' + token;
+}
 
-send_btn.addEventListener("click", (event) => {
+function send_cookies_to_compose() {
     allcookies = document.cookie.split(";");
     for (let i = 0; i < allcookies.length; i++) {
         thisCookie = allcookies[i].split("=");
         cName = unescape(thisCookie[0]);
         cValue = unescape(thisCookie[1]);
-        if (cName.indexOf("gmailapi_token") != -1) { t.value = cValue; }
-        if (cName.indexOf("gmailapi_refresh_token") != -1) { rt.value = cValue; }
+        if (cName.indexOf("gmailapi_token") != -1) { var token = cValue; }
+        if (cName.indexOf("gmailapi_refresh_token") != -1) { var refresh_token = cValue; }
     }
-});
-
-function getMessageShow(msg_id, token) {
-    window.location.href = 'https://nsysunmail.ml/show?id=' + msg_id + '&query=' + token;
+    window.location.href = 'https://owenchen.cf/compose?token=' + token + '&refresh_token=' + refresh_token;
 }
 
 // function getSelectedCheckbox(name) {
