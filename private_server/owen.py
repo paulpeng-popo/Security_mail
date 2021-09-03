@@ -1,10 +1,47 @@
-from flask import Flask, request, redirect
-from flask import render_template
+from flask import Flask, request, redirect, render_template
+from werkzeug.datastructures import FileStorage
 import requests, Sender, Receiver
 import os, hashlib
 
 app = Flask(__name__)
+UPLOAD_FOLDER = '/home/ubuntu/private_server/attachments/'
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 messages = {}
+
+@app.route("/compose", methods=['GET', 'POST'])
+def compose():
+    if request.method == 'GET':
+        token = request.args.get('token')
+        refresh_token = request.args.get('refresh_token')
+        return render_template("compose.html", token=token, refresh_token=refresh_token)
+    
+    form_data = request.form
+    receiver = form_data.get('to', None)
+    cc_receivers = form_data.get('cc', None)
+    subject = form_data.get('subject', None)
+    message = form_data.get('message', None)
+    files = request.files.getlist('attachments[]', None)
+
+    if files:
+        for file in files:
+            h = hashlib.blake2b(digest_size=8)
+            h.update(file.filename.encode('utf-8'))
+            hash_filename = h.hexdigest()
+            file.save(os.path.join(UPLOAD_FOLDER, hash_filename))
+    
+    cookies = {}
+    cookies['token'] = form_data['Cookies_token']
+    cookies['refresh_token'] = form_data['Cookies_refresh_token']
+
+    chead, enc_subject, enc_body = Sender.send(subject, message)
+
+    sending_data = {"Cookies": cookies, "Receiver": receiver, "Subject": enc_subject, "Message": enc_body, "Chead": chead}
+    result = requests.post('https://nsysunmail.ml/send', json=sending_data)
+
+    if result.text == "success":
+        print("Mail sends successfully.")
+        return redirect("https://nsysunmail.ml/")
+    else: return "Something bad happened when sending mail."
 
 @app.route("/show")
 def show():
@@ -41,28 +78,6 @@ def decrypt():
                      }
     messages[random_key] = decrypted_data
     return random_key
-
-@app.route("/encrypt", methods=['POST'])
-def encrypt():
-    form_data = request.form
-
-    receiver = form_data['to']
-    subject = form_data['subject']
-    message = form_data['message']
-
-    chead, enc_subject, enc_body = Sender.send(subject, message)
-
-    cookies = {}
-    cookies['token'] = form_data['Cookies_token']
-    cookies['refresh_token'] = form_data['Cookies_refresh_token']
-
-    sending_data = {"Cookies": cookies, "Receiver": receiver, "Subject": enc_subject, "Message": enc_body, "Chead": chead}
-    result = requests.post('https://nsysunmail.ml/send', json=sending_data)
-
-    if result.text == "success":
-        print("Mail sends successfully.")
-        return redirect("https://nsysunmail.ml/")
-    else: return "Something bad happened when sending mail."
 
 @app.route("/GetSearchToken", methods=['POST'])
 def generate_token():

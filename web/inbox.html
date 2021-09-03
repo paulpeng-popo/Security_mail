@@ -8,6 +8,7 @@
     <title>Mailbox:~ {{ userAddress }}</title>
     <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/inbox.css') }}">
+    
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -26,7 +27,7 @@
                             <!-- BEGIN INBOX MENU -->
                             <div class="col-md-3">
                                 <img class="logo" src="{{ url_for('static', filename='media/logo_nbg.png') }}">
-                                <a class="btn btn-block btn-primary" data-toggle="modal" data-target="#compose-modal">
+                                <a class="btn btn-block btn-primary" onclick="send_cookies_to_compose()">
                                     <i class="fa fa-pencil"></i>&nbsp;&nbsp;NEW MESSAGE</a>
                                 <hr>
                                 <div>
@@ -37,7 +38,8 @@
                                         <li><a href="#"><i class="fa fa-star"></i> Starred</a></li>
                                         <li><a href="#"><i class="fa fa-bookmark"></i> Important</a></li>
                                         <li><a href="#"><i class="fa fa-mail-forward"></i> Sent</a></li>
-                                        <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Logout</a></li>
+                                        <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Logout</a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -118,60 +120,6 @@
                                 </ul> -->
                             </div>
                             <!-- END INBOX CONTENT -->
-
-                            <!-- BEGIN COMPOSE MESSAGE -->
-                            <div class="modal fade" id="compose-modal" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-wrapper">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-blue">
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-hidden="true">×</button>
-                                                <h4 class="modal-title"><i class="fa fa-envelope"></i> Compose New
-                                                    Message</h4>
-                                            </div>
-                                            <form action="https://owenchen.cf/encrypt" method="post">
-                                                <div class="modal-body">
-                                                    <input type="hidden" id="token" name="Cookies_token" value="">
-                                                    <input type="hidden" id="refresh_token" name="Cookies_refresh_token"
-                                                        value="">
-                                                    <div class="form-group">
-                                                        <input name="to" type="email" class="form-control"
-                                                            placeholder="To">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <input name="cc" type="email" class="form-control"
-                                                            placeholder="Cc">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <input name="bcc" type="email" class="form-control"
-                                                            placeholder="Bcc">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <input name="subject" type="text" class="form-control"
-                                                            placeholder="Subject">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <textarea name="message" id="email_message" class="form-control"
-                                                            placeholder="Message" style="height: 120px;"></textarea>
-                                                    </div>
-                                                    <div class="form-group"> <input type="file" name="attachment">
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default"
-                                                        data-dismiss="modal"><i class="fa fa-times"></i>
-                                                        Discard</button>
-                                                    <button id="send_button" type="submit"
-                                                        class="btn btn-primary pull-right"><i
-                                                            class="fa fa-envelope"></i> Send Message</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END COMPOSE MESSAGE -->
                         </div>
                     </div>
                 </div>
@@ -188,7 +136,6 @@
                 margin-top: 20px;
             }
         }
-
     </style>
 
 </body>
