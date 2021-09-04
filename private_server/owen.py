@@ -2,7 +2,7 @@ from flask import Flask, request, redirect, render_template, send_file
 from werkzeug.datastructures import FileStorage
 from PEKS.Othertools.utils import *
 import requests, Sender, Receiver
-import os, hashlib
+import os, hashlib, Parser
 
 app = Flask(__name__)
 UPLOAD_FOLDER = '/home/ubuntu/private_server/attachments/'
@@ -89,7 +89,8 @@ def decrypt():
 		d_index = file['Content'].find('\n')
 		header = file['Content'][:d_index]
 		value = file['Content'][d_index:]
-		search_word = (file['Name'].split('.'))[0]
+		search_word = Parser.parse_subject(file['Name'])
+		search_word = ' '.join(search_word)
 		file_search_token = Receiver.tokenGen(search_word)
 		file_name, file_content = Receiver.unlock_mail(header, file_search_token, value)
 		file['File_url'] = "https://owenchen.cf/downloads/" + file_name
