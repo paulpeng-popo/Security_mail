@@ -4,6 +4,12 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import Flow
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from mimetypes import guess_type as guess_mime_type
 from datetime import datetime, timedelta
 import os, ast, time, json, hashlib, requests
 import Search, pybase64, re, calendar
@@ -44,9 +50,14 @@ def oauth2callback():
     flow = Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes = SCOPES, state = state)
     flow.redirect_uri = "https://nsysunmail.ml/oauth2callback"
     authorization_response = request.url
-    flow.fetch_token(authorization_response = authorization_response)
-    session['credentials'] = credentials_to_dict(flow.credentials)
-    return set_Cookies(redirect(url_for("mailbox")))
+    try:
+        flow.fetch_token(authorization_response = authorization_response)
+        session['credentials'] = credentials_to_dict(flow.credentials)
+        return set_Cookies(redirect(url_for("mailbox")))
+    except Exception as error:
+        if 'credentials' in session:
+            del session['credentials']
+        return redirect(url_for("index"))
 
 @app.route("/inbox")
 def mailbox():
@@ -161,7 +172,7 @@ def read_mail():
         sender, subject, date_str, mail_body, attachments, chead = get_Mailbody(service, message_id)
 
         search_token = request.args.get('query')
-        if search_token != "None":
+        if search_token != "None" and search_token != "all":
             decrypt_data = { "mail": mail_body, "chead": chead, "token": search_token,
                              "user": emailAddress, "sender": sender, "date": date_str,
                              "attachments": attachments }
@@ -193,16 +204,38 @@ def send_mail():
     create_credentials(send_data_json['Cookies'])
     creds = Credentials.from_authorized_user_info(session['credentials'], scopes=SCOPES)
     service = build('gmail', 'v1', credentials=creds)
+
     if request.method == "POST":
         user_info = service.users().getProfile(userId='me').execute()
         sender = user_info['emailAddress']
 
-        message = MIMEText(send_data_json['Message'])
-        message['To'] = send_data_json['Receiver']
-        message['From'] = sender
-        message['Subject'] = send_data_json['Subject']
-        message['Chead'] = send_data_json['Chead']
-        raw_data = {'raw': pybase64.urlsafe_b64encode(message.as_string().encode('utf-8')).decode('utf-8')}
+        if not send_data_json['Attachments']:
+            message = MIMEText(send_data_json['Message'])
+            message['To'] = send_data_json['Receiver']
+            if send_data_json['Cc']:
+                cc_receivers = ""
+                for ccs in send_data_json['Cc']:
+                    cc_receivers += "<" + ccs + ">, "
+                message['Cc'] = cc_receivers[:-2]
+            message['From'] = sender
+            message['Subject'] = send_data_json['Subject']
+            message['Chead'] = send_data_json['Chead']
+        else:
+            message = MIMEMultipart()
+            message['To'] = send_data_json['Receiver']
+            if send_data_json['Cc']:
+                cc_receivers = ""
+                for ccs in send_data_json['Cc']:
+                    cc_receivers += "<" + ccs + ">, "
+                message['Cc'] = cc_receivers[:-2]
+            message['From'] = sender
+            message['Subject'] = send_data_json['Subject']
+            message['Chead'] = send_data_json['Chead']
+            message.attach(MIMEText(send_data_json['Message']))
+            for file in send_data_json['Attachments']:
+                add_attachment(message, file)
+
+        raw_data = {'raw': pybase64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')}
 
         try:
             result = service.users().messages().send(userId='me', body=raw_data).execute()
@@ -212,6 +245,18 @@ def send_mail():
             print(error)
             return "fail"
     return "Method not allowed."
+
+def add_attachment(message, file):
+    content_type = 'application/octet-stream'
+    main_type, sub_type = content_type.split('/', 1)
+
+    msg = MIMEBase(main_type, sub_type)
+    data = file['header'] + '\n' + file['value']
+    msg.set_payload(data)
+
+    filename = file['name']
+    msg.add_header('Content-Disposition', 'attachment', filename=filename)
+    message.attach(msg)
 
 @app.route('/logout')
 def logout():
@@ -323,8 +368,9 @@ def get_Mailbody(service, message_id, debug=False):
                     att_data = attachment['data']
                     att_size = attachment['size']
 
-                attachments_list.append({ 'Name': attachment_name, 'Size': att_size, "File_url": "https://nsysunmail.ml/downloads/" + attachment_name })
                 file_data = pybase64.urlsafe_b64decode(att_data.encode('UTF-8'))
+                attachments_list.append({ 'Name': attachment_name, 'Size': att_size, 'Content': file_data,
+                                          "File_url": "https://nsysunmail.ml/downloads/" + attachment_name })
 
                 att_data = att_data.replace("-","+").replace("_","/")
                 for item in part['headers']:
