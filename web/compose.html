@@ -10,10 +10,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/compose.css') }}">
     <script src="{{ url_for('static', filename='ckeditor5/build/ckeditor.js') }}"></script>
 
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-v4-rtl/4.6.0-2/css/bootstrap.min.css"
+        integrity="sha512-hugT+JEQi0vXZbvspjv4x2M7ONBvsLR9IFTEQAYoUsmk7s1rRc2u7I6b4xa14af/wZ+Nw7Aspf3CtAfUOGyflA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-v4-rtl/4.6.0-2/js/bootstrap.bundle.min.js"
+        integrity="sha512-kBFfSXuTKZcABVouRYGnUo35KKa1FBrYgwG4PAx7Z2Heroknm0ca2Fm2TosdrrI356EDHMW383S3ISrwKcVPUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-v4-rtl/4.6.0-2/js/bootstrap.min.js"
+        integrity="sha512-M5KW3ztuIICmVIhjSqXe01oV2bpe248gOxqmlcYrEzAvws7Pw3z6BK0iGbrwvdrUQUhi3eXgtxp5I8PDo9YfjQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 
@@ -28,13 +33,13 @@
                     <div class="form-row mb-3">
                         <label for="to" class="col-2 col-sm-1 col-form-label">To:</label>
                         <div class="col-10 col-sm-11">
-                            <input name="to" type="email" class="form-control" id="to" placeholder="Type email" required>
+                            <input name="to" type="email" class="form-control" id="to" placeholder="example@gmail.com" required>
                         </div>
                     </div>
                     <div class="form-row mb-3">
                         <label for="cc" class="col-2 col-sm-1 col-form-label">Cc:</label>
                         <div class="col-10 col-sm-11">
-                            <input name="cc" type="email" class="form-control" id="cc" placeholder="Type email(s)" multiple>
+                            <input name="cc" type="email" class="form-control" id="cc" placeholder="example1@gmail.com, example2@gmail.com" multiple>
                         </div>
                     </div>
                     <div class="form-row mb-3">
@@ -52,11 +57,11 @@
                                     placeholder="Click here to reply"></textarea>
                             </div>
                             <div class="toolbar" role="toolbar">
-                                <button type="button" class="btn btn-light">
-                                    <span id="upload" class="fa fa-paperclip"> upload attachments</span>
+                                <button id="upload" type="button" class="btn btn-light">
+                                    <span class="fa fa-paperclip"> upload attachments</span>
                                 </button>
-                                <button type="button" class="btn btn-light">
-                                    <span id="cancel" class="fa fa-trash-o"> delete attachments</span>
+                                <button id="cancel" type="button" class="btn btn-light">
+                                    <span class="fa fa-trash-o"> delete attachments</span>
                                 </button>
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">

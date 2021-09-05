@@ -11,11 +11,12 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from mimetypes import guess_type as guess_mime_type
 from datetime import datetime, timedelta
+from LibServer.Search import *
 import os, ast, time, json, hashlib, requests
-import Search, pybase64, re, calendar
+import pybase64, re, calendar
 
 DOWNLOAD_PATH = "/home/ubuntu/flask/attachments/"
-CLIENT_SECRETS_FILE = "/home/ubuntu/flask/secret.json"
+CLIENT_SECRETS_FILE = "/home/ubuntu/flask/LibServer/secret.json"
 SCOPES = ["https://mail.google.com/"]
 
 app = Flask(__name__)
@@ -26,12 +27,12 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 @app.route("/")
 def index():
     if 'credentials' in session:
-        return redirect(url_for("mailbox"))
+        return redirect(url_for("mailbox", classOfinbox='INBOX'))
     return render_template("index.html")
 
 @app.route("/authorize")
 def authorize():
-    if is_cookies_valid(): return redirect(url_for("mailbox"))
+    if is_cookies_valid(): return redirect(url_for("mailbox", classOfinbox='INBOX'))
     verify_state = hashlib.sha256(os.urandom(1024)).hexdigest()
     flow = Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes = SCOPES)
     flow.redirect_uri = "https://nsysunmail.ml/oauth2callback"
@@ -53,22 +54,26 @@ def oauth2callback():
     try:
         flow.fetch_token(authorization_response = authorization_response)
         session['credentials'] = credentials_to_dict(flow.credentials)
-        return set_Cookies(redirect(url_for("mailbox")))
+        return set_Cookies(redirect(url_for("mailbox", classOfinbox='INBOX')))
     except Exception as error:
         if 'credentials' in session:
             del session['credentials']
         return redirect(url_for("index"))
 
-@app.route("/inbox")
-def mailbox():
+@app.route("/inbox/<classOfinbox>")
+def mailbox(classOfinbox):
     if 'credentials' in session:
         creds = Credentials.from_authorized_user_info(session['credentials'], scopes=SCOPES)
         service = build('gmail', 'v1', credentials=creds)
         search_token = request.args.get('query')
-        return display_mailbox(service, search_token=search_token)
+        nav_active = { "inboxstate": ("active" if classOfinbox=="INBOX" else ""),
+                       "starredstate": ("active" if classOfinbox=="STARRED" else ""),
+                       "importantstate": ("active" if classOfinbox=="IMPORTANT" else ""),
+                       "sentstate": ("active" if classOfinbox=="SENT" else "") }
+        return display_mailbox(service, classes=classOfinbox, nav_active=nav_active, search_token=search_token)
     return redirect(url_for("index"))
 
-def display_mailbox(service, classes="INBOX", search_token=None):
+def display_mailbox(service, classes, nav_active, search_token=None):
     messages_list = service.users().messages().list(userId='me', labelIds=classes).execute()
     user_info = service.users().getProfile(userId='me').execute()
     emailAddress, messagesTotal = user_info['emailAddress'], user_info['messagesTotal']
@@ -99,7 +104,7 @@ def display_mailbox(service, classes="INBOX", search_token=None):
             mailRows.append(get_MailInfo(headers, message_id))
 
     if search_token and search_token != "all":
-        results = Search.search(search_list, search_token)
+        results = search(search_list, search_token)
         for i, res in enumerate(results):
             if res:
                 mailRows.append(get_MailInfo(search_buffer[i]['headers'], search_buffer[i]['message_id']))
@@ -107,7 +112,8 @@ def display_mailbox(service, classes="INBOX", search_token=None):
     return render_template("inbox.html", userAddress=emailAddress,
                                          messagesTotal=messagesTotal,
                                          mailRows=mailRows,
-                                         search_token=search_token    )
+                                         search_token=search_token,
+                                         nav=nav_active                )
 
 def get_MailInfo(headers, message_id, shrink=True):
     month_table = { month: index for index, month in enumerate(calendar.month_abbr) if month }
@@ -263,8 +269,8 @@ def logout():
     if 'credentials' in session:
         del session['credentials']
     resp = make_response(redirect(url_for("index")))
-    # resp.set_cookie(key='gmailapi_token', value='', expires=0)
-    # resp.set_cookie(key='gmailapi_refresh_token', value='', expires=0)
+    resp.set_cookie(key='gmailapi_token', value='', expires=0)
+    resp.set_cookie(key='gmailapi_refresh_token', value='', expires=0)
     return resp
 
 @app.errorhandler(404)
