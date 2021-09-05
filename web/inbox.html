@@ -33,11 +33,11 @@
                                 <div>
                                     <ul class="nav nav-pills nav-stacked">
                                         <li class="header">Folders</li>
-                                        <li class="active"><a href="#"><i class="fa fa-inbox"></i> Inbox
+                                        <li class="{{ nav.inboxstate }}"><a href="https://nsysunmail.ml/inbox/INBOX"><i class="fa fa-inbox"></i> Inbox
                                                 ({{ messagesTotal }})</a></li>
-                                        <li><a href="#"><i class="fa fa-star"></i> Starred</a></li>
-                                        <li><a href="#"><i class="fa fa-bookmark"></i> Important</a></li>
-                                        <li><a href="#"><i class="fa fa-mail-forward"></i> Sent</a></li>
+                                        <li class="{{ nav.starredstate }}"><a href="https://nsysunmail.ml/inbox/STARRED"><i class="fa fa-star"></i> Starred</a></li>
+                                        <li class="{{ nav.importantstate }}"><a href="https://nsysunmail.ml/inbox/IMPORTANT"><i class="fa fa-bookmark"></i> Important</a></li>
+                                        <li class="{{ nav.sentstate }}"><a href="https://nsysunmail.ml/inbox/SENT"><i class="fa fa-mail-forward"></i> Sent</a></li>
                                         <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Logout</a>
                                         </li>
                                     </ul>
@@ -65,6 +65,7 @@
                                             <ul class="dropdown-menu" role="menu">
                                                 <li><a href="#">Mark as read</a></li>
                                                 <li><a href="#">Mark as unread</a></li>
+                                                <li><a href="#">Mark as starred</a></li>
                                                 <li><a href="#">Mark as important</a></li>
                                                 <li class="divider"></li>
                                                 <li><a href="#">Delete</a></li>
@@ -109,7 +110,7 @@
                                     </table>
                                 </div>
 
-                                <ul class="pagination" style="margin: 0;">
+                                <!-- <ul class="pagination" style="margin: 0;">
                                     <li class="disabled"><a href="#">«</a></li>
                                     <li class="active"><a href="#">1</a></li>
                                     <li><a href="#">2</a></li>
@@ -117,7 +118,7 @@
                                     <li><a href="#">4</a></li>
                                     <li><a href="#">5</a></li>
                                     <li><a href="#">»</a></li>
-                                </ul>
+                                </ul> -->
                             </div>
                             <!-- END INBOX CONTENT -->
                         </div>

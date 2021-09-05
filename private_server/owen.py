@@ -1,8 +1,10 @@
 from flask import Flask, request, redirect, render_template, send_file
 from werkzeug.datastructures import FileStorage
-from PEKS.Othertools.utils import *
-import requests, Sender, Receiver
-import os, hashlib, Parser
+from PrivateLib.PEKS.Othertools.utils import *
+from PrivateLib.Receiver import *
+from PrivateLib.Sender import *
+from PrivateLib.Parser import *
+import os, hashlib, requests
 
 app = Flask(__name__)
 UPLOAD_FOLDER = '/home/ubuntu/private_server/attachments/'
@@ -40,14 +42,14 @@ def compose():
 				data = f.read()
 			f.close()
 
-			fchead, enc_fakename, enc_fdata = Sender.send(file.filename, byte_to_base64(data))
+			fchead, enc_fakename, enc_fdata = send(file.filename, byte_to_base64(data))
 			the_attachments.append( { 'name': file.filename, 'header': fchead, 'value': enc_fdata } )
 
 	cookies = {}
 	cookies['token'] = form_data['Cookies_token']
 	cookies['refresh_token'] = form_data['Cookies_refresh_token']
 
-	chead, enc_subject, enc_body = Sender.send(subject, message)
+	chead, enc_subject, enc_body = send(subject, message)
 	sending_data = { "Cookies": cookies, "Receiver": receiver, "Cc": cc_receivers,
 					 "Subject": enc_subject, "Message": enc_body,
 					 "Chead": chead, "Attachments": the_attachments }
@@ -89,10 +91,10 @@ def decrypt():
 		d_index = file['Content'].find('\n')
 		header = file['Content'][:d_index]
 		value = file['Content'][d_index:]
-		search_word = Parser.parse_subject(file['Name'])
+		search_word = parse_subject(file['Name'])
 		search_word = ' '.join(search_word)
-		file_search_token = Receiver.tokenGen(search_word)
-		file_name, file_content = Receiver.unlock_mail(header, file_search_token, value)
+		file_search_token = tokenGen(search_word)
+		file_name, file_content = unlock_mail(header, file_search_token, value)
 		file['File_url'] = "https://owenchen.cf/downloads/" + file_name
 		file['Content'] = None
 
@@ -104,7 +106,7 @@ def decrypt():
 			f.write(base64_to_byte(file_content))
 		f.close()
 
-	subject, message = Receiver.unlock_mail(chead, search_token, mail_body)
+	subject, message = unlock_mail(chead, search_token, mail_body)
 	decrypted_data = {
 						"Subject": subject,
 						"Message": message,
@@ -128,8 +130,8 @@ def download(filename):
 @app.route("/GetSearchToken", methods=['POST'])
 def generate_token():
 	form_data = (request.form)['query']
-	if form_data == "@all": return redirect('https://nsysunmail.ml/inbox?query=all')
-	search_token = Receiver.tokenGen(form_data)
+	if form_data == "@all": return redirect('https://nsysunmail.ml/inbox/INBOX?query=all')
+	search_token = tokenGen(form_data)
 	print("Token generates successfully.")
-	search_url = 'https://nsysunmail.ml/inbox?query=' + search_token
+	search_url = 'https://nsysunmail.ml/inbox/INBOX?query=' + search_token
 	return redirect(search_url)
