@@ -1,6 +1,7 @@
 live2d/
 autoscp
 ckeditor5/
+private_server/database.py
 cookie_policy.png
 screen_cut.png
 *.mp4
