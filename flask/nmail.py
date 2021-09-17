@@ -201,13 +201,17 @@ def get_MailInfo(headers, message_id, labels=[], shrink=True):
     month_table = { month: index for index, month in enumerate(calendar.month_abbr) if month }
     week_table = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
+    subject, sender, date_str = None, None, None
     for item in headers:
-        if item['name'] == "Subject":
+        if item['name'] == "Subject" or item['name'] == "SUBJECT":
             subject = item['value']
-        if item['name'] == "From":
+        if item['name'] == "From" or item['name'] == "FROM":
             sender = item['value']
-        if item['name'] == "Date":
+        if item['name'] == "Date" or item['name'] == "DATE":
             date_str = item['value']
+
+    if not subject:
+        subject = "<無主旨>"
 
     date_list = date_str.split()
     try:
@@ -239,9 +243,10 @@ def get_MailInfo(headers, message_id, labels=[], shrink=True):
         elif offset >= timedelta(hours=12): date_str = correct_time.strftime("%m/%d")
         else: date_str = correct_time.strftime("%H:%M")
 
-        sender = re.sub("<.+@.+>", "", sender)
-        if sender[0] == '"': sender = sender[1:]
-        if sender[-2] == '"': sender = sender[:-2]
+        if sender[0] != "<":
+            sender = re.sub("<.+@.+>", "", sender)
+            if sender[0] == '"': sender = sender[1:]
+            if sender[-2] == '"': sender = sender[:-2]
     else:
         date_str = correct_time.strftime("%Y/%m/%d %A %H:%M")
 
