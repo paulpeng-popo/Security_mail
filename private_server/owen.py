@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, render_template, send_file
+from PrivateLib.PEKS.Othertools.utils import base64_to_byte, byte_to_base64
 from werkzeug.datastructures import FileStorage
-from PrivateLib.PEKS.Othertools.utils import *
 from PrivateLib.Receiver import *
 from PrivateLib.Sender import *
 from PrivateLib.Parser import *
@@ -10,6 +10,13 @@ app = Flask(__name__)
 UPLOAD_FOLDER = '/home/ubuntu/private_server/attachments/'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 messages = {}
+
+@app.route("/parse", methods=['GET'])
+def subject_parse():
+	subject = request.args.get('subject')
+	attributes = parse_subject(subject)
+	attr_demo = { 'response': attributes }
+	return attr_demo
 
 @app.route("/compose", methods=['GET', 'POST'])
 def compose():
@@ -22,8 +29,11 @@ def compose():
 	receiver = form_data.get('to', None)
 	cc_receivers = form_data.get('cc', None)
 	subject = form_data.get('subject', None)
+	attributs = form_data.get('AttrsList[]', None)
 	message = form_data.get('message', None)
 	files = request.files.getlist('attachments[]', None)
+
+	print(attributs.split(','))
 
 	if cc_receivers:
 		cc_receivers.replace(' ', '')
@@ -49,7 +59,8 @@ def compose():
 	cookies['token'] = form_data['Cookies_token']
 	cookies['refresh_token'] = form_data['Cookies_refresh_token']
 
-	chead, enc_subject, enc_body = send(subject, message)
+	chead, enc_subject, enc_body = send(subject, message, AttrsList=attributs.split(','))
+	
 	sending_data = { "Cookies": cookies, "Receiver": receiver, "Cc": cc_receivers,
 					 "Subject": enc_subject, "Message": enc_body,
 					 "Chead": chead, "Attachments": the_attachments }
@@ -58,7 +69,7 @@ def compose():
 	if result.text == "success":
 		print("Mail sends successfully.")
 		return redirect("https://nsysunmail.ml/")
-	else: return "Something bad happened when sending mail."
+	else: return "Sorry,<br />Your authorization is expired,<br />please <a href='https://nsysunmail.ml'>re-authorize</a> and compose again !!"
 
 @app.route("/show")
 def show():
@@ -130,8 +141,9 @@ def download(filename):
 @app.route("/GetSearchToken", methods=['POST'])
 def generate_token():
 	form_data = (request.form)['query']
-	if form_data == "@all": return redirect('https://nsysunmail.ml/inbox/INBOX?query=all')
+	classes = (request.form)['classes']
+	if form_data == "@all": return redirect('https://nsysunmail.ml/inbox/'+classes+'?query=all')
 	search_token = tokenGen(form_data)
 	print("Token generates successfully.")
-	search_url = 'https://nsysunmail.ml/inbox/INBOX?query=' + search_token
+	search_url = 'https://nsysunmail.ml/inbox/'+classes+'?query=' + search_token
 	return redirect(search_url)

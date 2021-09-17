@@ -26,6 +26,54 @@ button a:hover {
     border-top: 1px solid #e8ebf1;
 }
 
+.area-flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.item {
+    font-family: "Times New Roman", sans-serif;
+    text-align: center;
+    width: auto;
+    font-weight: bold;
+    margin: 5px 10px 5px 10px;
+    border: 2px solid black;
+    padding: 5px 10px 5px 10px;
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.area-delete::before {
+    float: right;
+    content: "drag here to remove";
+    margin-left: 20px;
+    font-family: "Times New Roman", sans-serif;
+    text-align: center;
+    width: auto;
+    font-weight: bold;
+    margin: 5px 10px 5px 10px;
+    padding: 5px 10px 5px 10px;
+    border: 2px dotted red;
+    background-color: rosybrown;
+}
+
+.left-margin {
+    margin-left: 20px;
+    display: flex;
+}
+
+.add-button {
+    width: auto;
+    text-align: center;
+    font-weight: bold;
+    background-color: burlywood;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 20px;
+    flex-wrap: wrap;
+}
+
 @media (max-width: 767px) {
     .email-attachments {
         padding: 25px 10px 0;

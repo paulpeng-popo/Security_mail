@@ -6,7 +6,7 @@ import hashlib, os.path
 GroupCurve = "MNT224"
 KeysFile = "/home/ubuntu/private_server/PrivateLib/Server_keys"
 
-def send(subject, message, debug=False):
+def send(subject, message, AttrsList=None, debug=False):
 	# ======= set up eliptic curve parameters =======
 	groupObj = PairingGroup(GroupCurve)
 	kpabe = KPabe(groupObj, debug)
@@ -33,7 +33,10 @@ def send(subject, message, debug=False):
 		print("\nverf:\n", verf)
 
 	# ======= create attributes in dictionary =======
-	attributes = parse_subject(subject)
+	if AttrsList == None or len(AttrsList) <= 0:
+		attributes = parse_subject(subject)
+	else:
+		attributes = AttrsList
 	attrs = []
 	for attr in attributes:
 		temp = hashlib.sha224(attr.encode('utf-8')).hexdigest()

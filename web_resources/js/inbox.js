@@ -2,6 +2,23 @@ function getMessageShow(msg_id, token) {
     window.location.href = 'https://nsysunmail.ml/show?id=' + msg_id + '&query=' + token;
 }
 
+function getSelectedCheckbox(action) {
+    const checkboxes = document.querySelectorAll(`input[name="a_mail"]:checked`);
+    let valus_str = ""
+    let values = [];
+    checkboxes.forEach((checkbox) => {
+        values.push(checkbox.value);
+    });
+    for (let i = 0; i < values.length; i++) {
+        if (i == 0) {
+            valus_str += values[i]
+        } else {
+            valus_str += " " + values[i]
+        }
+    }
+    window.location.href = 'https://nsysunmail.ml/modify?action=' + action + '&modify_list=' + valus_str;
+}
+
 function send_cookies_to_compose() {
     allcookies = document.cookie.split(";");
     for (let i = 0; i < allcookies.length; i++) {
@@ -13,18 +30,3 @@ function send_cookies_to_compose() {
     }
     window.location.href = 'https://owenchen.cf/compose?token=' + token + '&refresh_token=' + refresh_token;
 }
-
-// function getSelectedCheckbox(name) {
-// 	const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
-// 	let values = [];
-// 	checkboxes.forEach((checkbox) => {
-// 		values.push(checkbox.value);
-// 	});
-// 	return values;
-// }
-
-// const decrypt = document.querySelector('#decrypt_button');
-// decrypt.addEventListener('click', (event) => {
-// 	ids = getSelectedCheckbox('a_mail');
-//     alert(ids)
-// });
