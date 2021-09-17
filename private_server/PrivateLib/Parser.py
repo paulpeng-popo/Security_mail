@@ -17,6 +17,8 @@ def parse_subject(subject):
     for word in seg_list.copy():
         if len(word) < 2:
             seg_list.remove(word)
+    if len(seg_list) <= 0:
+        return []
     return list(dict.fromkeys(seg_list))
 
 if __name__ == "__main__":
