@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>About Authors</title>
+    <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/authors.css') }}">
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <h1>Our Team</h1>
+        <div class="our_team">
+            <div class="team_member">
+                <div class="member_img">
+                    <img src="{{ url_for('static', filename='media/owen.png') }}" alt="Owen Chen">
+                    <div class="social_media">
+                        <div class="facebook item"><a href="https://www.facebook.com/profile.php?id=100013094112566">
+                            <i class="fab fa-facebook-f"></i></a></div>
+                        <div class="twitter item"><a href="#" onclick="owen_twitter()">
+                            <i class="fab fa-twitter"></i></a></div>
+                        <div class="instagram item"><a href="https://www.instagram.com/cpinzhong/">
+                            <i class="fab fa-instagram"></i></a></div>
+                    </div>
+                </div>
+                <h3>Owen Chen</h3>
+                <span>Team Leader</span>
+                <p>
+                    大家好我叫陳品中，中山大學資工系的驕傲。
+                    我才華洋溢且成績名列前茅，同時我coding能力超群。
+                    此外我還能推甄，厲害到連自己都會怕。
+                </p>
+            </div>
+            <div class="team_member">
+                <div class="member_img">
+                    <img src="{{ url_for('static', filename='media/can.png') }}" alt="Can Rain">
+                    <div class="social_media">
+                        <div class="facebook item"><a href="https://www.facebook.com/profile.php?id=100000343000741">
+                                <i class="fab fa-facebook-f"></i></a></div>
+                        <div class="twitter item"><a href="#" onclick="can_twitter()">
+                                <i class="fab fa-twitter"></i></a></div>
+                        <div class="instagram item"><a href="https://www.instagram.com/kuanyuu_0406/">
+                                <i class="fab fa-instagram"></i></a></div>
+                    </div>
+                </div>
+                <h3>KuanYuu Ko</h3>
+                <span>Algorithm analyzer</span>
+                <p>
+                    我的名字是冠宇敝姓柯，目前就讀中山大學資工系。
+                    我成績原本不錯，但因為我們組長實在是太強了，導致我暫居第二。
+                    最後我想說，其實我也能推甄，這個專題我是當興趣在做。
+                </p>
+            </div>
+            <div class="team_member">
+                <div class="member_img">
+                    <img src="{{ url_for('static', filename='media/popo.png') }}" alt="PoPo">
+                    <div class="social_media">
+                        <div class="facebook item"><a href="https://www.facebook.com/paulpeng.popo/">
+                                <i class="fab fa-facebook-f"></i></a></div>
+                        <div class="twitter item">
+                            <a href="https://twitter.com/Orientalgodhere?fbclid=IwAR2u8_5sZpbIHrrocxB6-JsyCjSm24n6Fuu-JqroKTYR2wvk3JT3rP_XGjE">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                        <div class="instagram item"><a href="https://www.facebook.com/paulpeng.popo/">
+                                <i class="fab fa-instagram"></i></a></div>
+                    </div>
+                </div>
+                <h3>Paul Peng</h3>
+                <span>Trash</span>
+                <p>
+                    這個人在躺，連自介都懶得打，中山資工之恥。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/authors.js') }}"></script>
+
+</body>
+
+</html>
