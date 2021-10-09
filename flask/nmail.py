@@ -38,6 +38,16 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/authors")
+def authors():
+    return render_template("authors.html")
+
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
 @app.route("/authorize")
 def authorize():
     if is_cookies_valid(): return redirect(url_for("mailbox", classOfinbox='INBOX'))
