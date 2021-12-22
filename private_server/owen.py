@@ -76,6 +76,7 @@ def show():
 	random_key = request.args.get('random_key')
 	if random_key in messages:
 		return render_template("read.html", userAddress=messages[random_key]['User'],
+                         					Receiver=messages[random_key]['Receiver'],
 											SUBJECT=messages[random_key]['Subject'],
 											SENDER=messages[random_key]['Sender'],
 											DATE=messages[random_key]['Date'],
@@ -94,6 +95,7 @@ def decrypt():
 	chead = enc_data['chead']
 	user = enc_data['user']
 	sender = enc_data['sender']
+	receiver = enc_data['receiver']
 	date_str = enc_data['date']
 	search_token = enc_data['token']
 	attachments_list = enc_data['attachments']
@@ -123,6 +125,7 @@ def decrypt():
 						"Message": message,
 						"User": user,
 						"Sender": sender,
+						"Receiver": receiver,
 						"Date": date_str,
 						"Attachments": attachments_list
 					 }

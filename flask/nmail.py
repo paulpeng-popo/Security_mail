@@ -48,6 +48,11 @@ def about():
     return render_template("about.html")
 
 
+@app.route("/references")
+def reference():
+    return render_template("references.html")
+
+
 @app.route("/authorize")
 def authorize():
     if is_cookies_valid(): return redirect(url_for("mailbox", classOfinbox='INBOX'))
@@ -211,12 +216,14 @@ def get_MailInfo(headers, message_id, labels=[], shrink=True):
     month_table = { month: index for index, month in enumerate(calendar.month_abbr) if month }
     week_table = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-    subject, sender, date_str = None, None, None
+    subject, sender, receiver, date_str = None, None, None, None
     for item in headers:
         if item['name'] == "Subject" or item['name'] == "SUBJECT":
             subject = item['value']
         if item['name'] == "From" or item['name'] == "FROM":
             sender = item['value']
+        if item['name'] == "To" or item['name'] == "TO":
+            receiver = item['value']
         if item['name'] == "Date" or item['name'] == "DATE":
             date_str = item['value']
 
@@ -262,7 +269,7 @@ def get_MailInfo(headers, message_id, labels=[], shrink=True):
 
     read_or_not = ('' if 'UNREAD' in labels else 'read')
 
-    return {'Subject': subject, 'From': sender, 'Date': date_str, 'ID': message_id, 'status': read_or_not}
+    return {'Subject': subject, 'From': sender, 'To': receiver, 'Date': date_str, 'ID': message_id, 'status': read_or_not}
 
 @app.route('/modify', methods=['GET'])
 def modify():
@@ -325,21 +332,23 @@ def read_mail():
 
         message_id = request.args.get('id')
         service.users().messages().modify(userId='me', id=message_id, body={'removeLabelIds': ['UNREAD']}).execute()
-        sender, subject, date_str, mail_body, attachments, chead = get_Mailbody(service, message_id)
+        sender, receiver, subject, date_str, mail_body, attachments, chead = get_Mailbody(service, message_id)
+        if receiver == emailAddress: receiver = "me"
 
         search_token = request.args.get('query')
         if search_token != "None" and search_token != "all":
             redundent = mail_body.rfind('>')
             mail_body = mail_body[redundent+1:]
             decrypt_data = { "mail": mail_body, "chead": chead, "token": search_token,
-                             "user": emailAddress, "sender": sender, "date": date_str,
-                             "attachments": attachments }
+                             "user": emailAddress, "sender": sender, "receiver": receiver,
+                             "date": date_str, "attachments": attachments }
             result = requests.post('https://owenchen.cf/decrypt', json=decrypt_data)
             if result.text:
                 print("Mail decrypt successfully.")
                 return redirect("https://owenchen.cf/show?random_key=" + result.text)
 
         return render_template("read.html", userAddress=emailAddress,
+                                            Receiver=receiver,
                                             SUBJECT=subject,
                                             SENDER=sender,
                                             DATE=date_str,
@@ -558,4 +567,4 @@ def get_Mailbody(service, message_id, debug=False):
         newSRC = "data:" + item['type'] + ";base64, " + item['dataBASE64']
         body = re.sub(be_sub, newSRC, body)
 
-    return header['From'], header['Subject'], header['Date'], body, attachments_list, chead
+    return header['From'], header['To'], header['Subject'], header['Date'], body, attachments_list, chead
