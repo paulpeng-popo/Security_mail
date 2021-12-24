@@ -5,6 +5,7 @@
 
 ## File structure and introduction
 
+```
 .
 ├── flask
 │   ├── LibServer
@@ -69,6 +70,7 @@
         ├── index.js
         ├── jquery.dad.js
         └── jquery.dad.min.js
+```
 
 1. utils.py
     - complemented by us
@@ -106,7 +108,7 @@
 
 ## How to transplant
 
-###Prerequisite
+### Prerequisite
 
 + create a new project on google cloud platform
     + required
@@ -135,7 +137,7 @@
     + google_auth_oauthlib
     + werkzeug.datastructures
 
-###Clone files onto machines
+### Clone files onto machines
 
 + setup apache2
     + enable mod_wsgi, [official document](https://flask.palletsprojects.com/en/2.0.x/deploying/mod_wsgi/)
@@ -186,7 +188,7 @@
     + [owen.py](./private_server/owen.py)
     + and the above file (backend.conf)
 
-###Something to be noticed
+### Something to be noticed
 
 + Some absolute path need to modify, and to fit your custom folder path
     + *DOWNLOAD_PATH* in [nmail.py](./flask/nmail.py)
