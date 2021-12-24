@@ -1,0 +1,58 @@
+body {
+    background-color: rgb(247, 224, 183);
+    padding: 20px 30px;
+    margin: 0 30px;
+    font-family: 'Lucida Sans',
+        'Lucida Sans Regular',
+        'Lucida Grande',
+        'Lucida Sans Unicode',
+        Geneva,
+        Verdana,
+        sans-serif;
+}
+
+.title-flag {
+    margin: 30px 0;
+    text-align: center;
+    font-size: 45px;
+}
+
+.horizontal-card {
+    background-color: cornsilk;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.heading {
+    text-decoration: underline;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.text-body {
+    width: auto;
+    margin: 0 20px 0 20px;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.highlight {
+    font-weight: 600;
+}
+
+.name {
+    font-style: italic;
+    font-weight: 600;
+}
+
+a {
+    text-decoration: none;
+    color: blue;
+    font-style: italic;
+}
+
+.card {
+    margin: 0;
+    padding: 20px;
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mailbox:~ {{ userAddress }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/inbox.css') }}">
+
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body style="background-color: rgba(0, 0, 0, 0.7);">
+    <div class="container">
+        <div class="row">
+            <!-- BEGIN INBOX -->
+            <div class="col-md-12">
+                <div class="grid email">
+                    <div class="grid-body">
+                        <div class="row">
+                            <!-- BEGIN INBOX MENU -->
+                            <div class="col-md-3">
+                                <img class="logo" src="{{ url_for('static', filename='media/logo_nbg.png') }}">
+                                <a class="btn btn-block btn-primary" onclick="send_cookies_to_compose()">
+                                    <i class="fa fa-pencil"></i>&nbsp;&nbsp;NEW MESSAGE</a>
+                                <hr>
+                                <div>
+                                    <ul class="nav nav-pills nav-stacked">
+                                        <li class="header">Folders</li>
+                                        <li class="{{ nav.inboxstate }}"><a href="https://nsysunmail.ml/inbox/INBOX"><i
+                                                    class="fa fa-inbox"></i> Inbox
+                                                ({{ messagesTotal.inbox }})</a></li>
+                                        <li class="{{ nav.starredstate }}"><a
+                                                href="https://nsysunmail.ml/inbox/STARRED"><i class="fa fa-star"></i>
+                                                Starred({{ messagesTotal.starred }})</a></li>
+                                        <li class="{{ nav.importantstate }}"><a
+                                                href="https://nsysunmail.ml/inbox/IMPORTANT"><i
+                                                    class="fa fa-bookmark"></i> Important({{ messagesTotal.important }})</a></li>
+                                        <li class="{{ nav.sentstate }}"><a href="https://nsysunmail.ml/inbox/SENT"><i
+                                                    class="fa fa-mail-forward"></i> Sent({{ messagesTotal.sent }})</a></li>
+                                        <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"></i> Logout</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- END INBOX MENU -->
+
+                            <!-- BEGIN INBOX CONTENT -->
+                            <div class="col-md-9">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label style="margin-right: 8px;" class="">
+                                            <div class="icheckbox_square-blue" style="position: relative;"><input
+                                                    type="checkbox" id="check-all" class="icheck"
+                                                    style="position: absolute; top: -20%; left: -20%; display: block; width: 140%; height: 140%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);"><ins
+                                                    class="iCheck-helper"
+                                                    style="position: absolute; top: -20%; left: -20%; display: block; width: 140%; height: 140%; margin: 0px; padding: 0px; border: 0px; opacity: 0; background: rgb(255, 255, 255);"></ins>
+                                            </div>
+                                        </label>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default dropdown-toggle"
+                                                data-toggle="dropdown">
+                                                Action <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a onclick="getSelectedCheckbox('read')">Mark as read</a></li>
+                                                <li><a onclick="getSelectedCheckbox('unread')">Mark as unread</a></li>
+                                                <li><a onclick="getSelectedCheckbox('star')">Mark as starred</a></li>
+                                                <li><a onclick="getSelectedCheckbox('important')">Mark as important</a></li>
+                                                <li class="divider"></li>
+                                                <li><a onclick="getSelectedCheckbox('delete')">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 search-form">
+                                        <form action="https://owenchen.cf/GetSearchToken" method="post"
+                                            class="text-right">
+                                            <div class="input-group">
+                                                <input type="hidden" name="classes" value="{{ classes }}">
+                                                <input name="query" type="text" class="form-control input-sm"
+                                                    placeholder="Search by attributes" required>
+                                                <span class="input-group-btn">
+                                                    <button type="submit" name="search"
+                                                        class="btn_ btn-primary btn-sm search"><i
+                                                            class="fa fa-search"></i></button></span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="padding"></div>
+
+                                <div class="table-responsive" style="margin-bottom: 0;">
+                                    <table class="table">
+                                        <tbody>
+                                            {% for mail in mailRows %}
+                                            <tr id="{{ mail.ID }}" class="{{ mail.status }}">
+                                                <td class="action"><input name="a_mail" value="{{ mail.ID }}"
+                                                        type="checkbox" style="cursor: pointer;" /></td>
+                                                <td class="action"><i class="fa fa-star-o"></i></td>
+                                                <td class="action"><i class="fa fa-bookmark-o"></i></td>
+                                                <td class="name">{{ mail.From }}</td>
+                                                <td class="subject" style="cursor: pointer;"
+                                                    onclick="getMessageShow('{{ mail.ID }}', '{{ search_token }}')">
+                                                    {{ mail.Subject }}</td>
+                                                <td class="time">{{ mail.Date }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <ul class="pagination" style="margin-top: 20px;">
+                                    {% for page in pages.paging %}
+                                    <li class="{{ page.class }}"><a href="{{ page.url }}">{{ page.num }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <!-- END INBOX CONTENT -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END INBOX -->
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/inbox.js') }}"></script>
+
+    <style>
+        @media screen and (max-width: 767px) {
+            .search-form {
+                margin-top: 20px;
+            }
+        }
+
+        @media screen and (min-width: 767px) {
+            .pagination {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+
+</body>
+
+</html>

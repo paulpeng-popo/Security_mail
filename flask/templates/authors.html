@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>About Authors</title>
+    <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/authors.css') }}">
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <h1>Our Team</h1>
+        <div class="our_team">
+            <div class="team_member">
+                <div class="member_img">
+                    <img src="{{ url_for('static', filename='media/owen.png') }}" alt="Owen Chen">
+                    <div class="social_media">
+                        <div class="facebook item"><a href="https://www.facebook.com/profile.php?id=100013094112566">
+                            <i class="fab fa-facebook-f"></i></a></div>
+                        <div class="twitter item"><a href="#" onclick="owen_twitter()">
+                            <i class="fab fa-twitter"></i></a></div>
+                        <div class="instagram item"><a href="https://www.instagram.com/cpinzhong/">
+                            <i class="fab fa-instagram"></i></a></div>
+                    </div>
+                </div>
+                <h3>Owen Chen</h3>
+                <span>Team Leader</span>
+                <p>
+                    我是中山大學資工系四年級的陳品中，感謝我的組員們，
+                    沒有他們，我才能完成這個專題報告！
+                </p>
+            </div>
+            <div class="team_member">
+                <div class="member_img">
+                    <img src="{{ url_for('static', filename='media/can.png') }}" alt="Can Rain">
+                    <div class="social_media">
+                        <div class="facebook item"><a href="https://www.facebook.com/profile.php?id=100000343000741">
+                                <i class="fab fa-facebook-f"></i></a></div>
+                        <div class="twitter item"><a href="#" onclick="can_twitter()">
+                                <i class="fab fa-twitter"></i></a></div>
+                        <div class="instagram item"><a href="https://www.instagram.com/kuanyuu_0406/">
+                                <i class="fab fa-instagram"></i></a></div>
+                    </div>
+                </div>
+                <h3>KuanYuu Ko</h3>
+                <span>Neko Feeder</span>
+                <p>
+                    我叫柯冠宇，目前就讀中山大學資工系。
+                    我家的貓會後空翻 要看嗎 ?
+                    我超愛這個專題，我的人生就是寫code+debug。
+                </p>
+            </div>
+            <div class="team_member">
+                <div class="member_img">
+                    <img src="{{ url_for('static', filename='media/popo.png') }}" alt="PoPo">
+                    <div class="social_media">
+                        <div class="facebook item"><a href="https://www.facebook.com/paulpeng.popo/">
+                                <i class="fab fa-facebook-f"></i></a></div>
+                        <div class="twitter item">
+                            <a href="https://twitter.com/Orientalgodhere?fbclid=IwAR2u8_5sZpbIHrrocxB6-JsyCjSm24n6Fuu-JqroKTYR2wvk3JT3rP_XGjE">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                        <div class="instagram item"><a href="https://www.facebook.com/paulpeng.popo/">
+                                <i class="fab fa-instagram"></i></a></div>
+                    </div>
+                </div>
+                <h3>Paul Peng</h3>
+                <span>Peko Peko</span>
+                <p>
+                    我叫彭煜博，可以叫我popo。
+                    能跟朋友們一起做出這個專題是我的榮幸。
+                    這個系統超棒der，用過都說讚，真心不騙。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/authors.js') }}"></script>
+
+</body>
+
+</html>

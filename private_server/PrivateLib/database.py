@@ -1,3 +1,9 @@
+################################################################################################
+#           This file has not complemented yet, and is not necesary for current version        #
+#           Could be added if system need limiting users to login                              #
+################################################################################################
+
+
 import pyrebase
 
 config = {

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Welcome to Nmail</title>
+    <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="header">
+                    <h1><a href="https://nsysunmail.ml/" class="logo">Nmail</a></h1>
+                    <ul class="nav mobileNav">
+                        <li class="nav-item">
+                            <a href="https://nsysunmail.ml/about" class="nav-link">About Nmail</a>
+                        </li>
+                        <li class="nav-item"><a href="https://nsysunmail.ml/authors"
+                            class="nav-link">About authors</a></li>
+                        <li class="nav-item"><a href="https://nsysunmail.ml/references" class="nav-link">References</a></li>
+                        <li class="nav-item"><a href="javascipt:void(0);" onclick="alert('Sorry, you cannot contact us.')" class="nav-link">Contact us</a></li>
+                    </ul>
+                    <div class="toggleMenu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <section>
+                    <div class="interface">
+                        <h2 class="main-text">A more safe way using Gmail</h2>
+                        <button id="GetStart" style="display: block;"><span>Get Started </span></button>
+                        <div id="StepsBlock" class="steps-block">
+                            <img class="gmail-icon" src="{{ url_for('static', filename='media/gmail.png') }}">
+                            <div class="steps">
+                                <h3><span class="title">Step1:</span>Authorize your Gmail to system</h3>
+                                <h3><span class="title">Step2:</span>Manage your Gmail safely</h3>
+                            </div>
+                        </div>
+                        <pre id="content" style="white-space: pre-wrap; display: none;" class="warning"></pre>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="container footer">
+            <div class="row">
+                <p>Copyright of ISLab © 2021. All rights reserved</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
+
+</body>
+
+</html>

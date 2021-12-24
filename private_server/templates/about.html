@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>About Nmail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+    <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/about.css') }}">
+</head>
+
+<body>
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-4 title-flag"></div>
+            <div class="col-4 title-flag">關於 Nmail</div>
+            <div class="col-4 title-flag"></div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+                <div class="horizontal-card">
+                    <div class="heading">
+                        <ul>
+                            <li>Nmail 誕生</li>
+                        </ul>
+                    </div>
+                    <div class="text-body">
+                        <p>
+                            Nmail 為我們作者群在大四專題展所製作及整合的郵件系統，其中使用並改編包含
+                            <span class="name">JHUISI</span> 撰寫的<span class="highlight">加密系統模板</span>
+                            <a href="https://github.com/JHUISI/charm">Charm</a>,
+                            <span class="name">交大資管 APCLab</span>
+                            在開源平台 Github 中發布的<span class="highlight">結巴 (jieba) 斷詞台灣繁體 特化版本</span>
+                            <a href="https://github.com/APCLab/jieba-tw">jieba-tw</a>
+                            以及 Google 的 Gmail API。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="horizontal-card">
+                    <div class="heading">
+                        <ul>
+                            <li>什麼是 Nmail</li>
+                        </ul>
+                    </div>
+                    <div class="text-body">
+                        <p>
+                            Nsysu-mail (Nmail) 全名為 <span class="highlight">植基於屬性加密之外掛式郵件加密系統</span>，
+                            是一款由國立中山大學所開發之實驗性質郵件系統，其中網頁設計方法、加密架構與系統流程為
+                            <a href="https://cifan.g-mail.nsysu.edu.tw/">資訊安全實驗室 (IsLab)</a>
+                            <span class="name">范俊逸教授, 郭信男學長, 莊額碩學長, 王竣輝學長</span> 所指導撰寫並給予建議。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="horizontal-card">
+                    <div class="heading">
+                        <ul>
+                            <li>為什麼使用 Nmail</li>
+                        </ul>
+                    </div>
+                    <div class="text-body">
+                        <p>
+                            Nmail 幫助使用者在寄出信件時，先把信件送到內部伺服器做加密，再將密文傳給郵件伺服器(Gmail)去寄信。
+                            收件者若也使用該系統，也可依照類似流程將信件解密。若公司的成員皆使用該系統，便能防止外部使用者讀取信件內容，
+                            同時避免郵件伺服器(Gmail)直接存取明文。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="horizontal-card">
+                    <div class="heading">
+                        <ul>
+                            <li>Nmail 的架構與安全姓</li>
+                        </ul>
+                    </div>
+                    <div class="text-body">
+                        <p>
+                            我們系統架構可分成兩部份:<br />
+                            <ol>
+                                <li>
+                                    <span class="highlight">Nmail Server</span> 主要以串接 Gmail API 為主，
+                                    內容包括 Google account 的 Oauth2.0 授權認證，Gmail 信件的撰寫、標籤和刪除。
+                                    同時 Nmail Server 作為內部伺服器與郵件伺服器(Gmail)的接口，
+                                    還負責將加密後的信件標頭與使用者的搜尋關鍵字作解密配對，以搜尋信件所嵌入之屬性。
+                                </li>
+                                <li>
+                                    <span class="highlight">Private Server</span> 主要以文字或二進位制的檔案加解密為主，
+                                    此伺服端在接受到密文或明文後，會將所有內容以使用者傳入之嵌入屬性或屬性結構做加密或解密。
+                                </li>
+                            </ol>
+                        </p>
+                    </div>
+                    <img src="{{ url_for('static', filename='media/structure.jpg') }}" class="card-img-top"
+                        alt="system structure">
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+                <div class="card">
+                    <img src="{{ url_for('static', filename='media/google.jpg') }}" width="200" height="200"
+                        class="card-img-top" alt="google encryption">
+                    <div class="card-body">
+                        <h5 class="card-title">Attribute-based encryption</h5>
+                        <p class="card-text">
+                            為了使加密後的搜尋與解密方便，但又不失安全性，我們使用 key-policy 的屬性加密來實作系統的加密核心。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <img src="{{ url_for('static', filename='media/servers.png') }}" width="200" height="200"
+                        class="card-img-top" alt="distributed server">
+                    <div class="card-body">
+                        <h5 class="card-title">Two phases server</h5>
+                        <p class="card-text">
+                            避免信件明文與處理函式都運作在同一個伺服端(Nmail Server)，造成資安疑慮，
+                            因此我們額外設計內部伺服器(Private Server)專門處理信件的加解密，
+                            並將此伺服器(Private Server)架設在私人的主機上以防止外部破解。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <img src="{{ url_for('static', filename='media/minions1.jpg') }}" width="200" height="350"
+                        class="card-img-top" alt="minions">
+                    <div class="card-body">
+                        <h5 class="card-title">Convenient search</h5>
+                        <p class="card-text">
+                            在查看信件時，可直接以想搜尋之關鍵字作為屬性，讓系統去匹配先前使用相同關鍵字做加密之信件
+                            相比之下，比把每封信皆解密來的有效率。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

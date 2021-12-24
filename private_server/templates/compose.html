@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compose Mail:~ private server</title>
+    <link rel="icon" href="{{ url_for('static', filename='media/uni_logo_nbg.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/compose.css') }}">
+    <script src="{{ url_for('static', filename='ckeditor5/build/ckeditor.js') }}"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-v4-rtl/4.6.0-2/css/bootstrap.min.css"
+        integrity="sha512-hugT+JEQi0vXZbvspjv4x2M7ONBvsLR9IFTEQAYoUsmk7s1rRc2u7I6b4xa14af/wZ+Nw7Aspf3CtAfUOGyflA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-v4-rtl/4.6.0-2/js/bootstrap.bundle.min.js"
+        integrity="sha512-kBFfSXuTKZcABVouRYGnUo35KKa1FBrYgwG4PAx7Z2Heroknm0ca2Fm2TosdrrI356EDHMW383S3ISrwKcVPUw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-v4-rtl/4.6.0-2/js/bootstrap.min.js"
+        integrity="sha512-M5KW3ztuIICmVIhjSqXe01oV2bpe248gOxqmlcYrEzAvws7Pw3z6BK0iGbrwvdrUQUhi3eXgtxp5I8PDo9YfjQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.dad.min.js') }}"></script>
+</head>
+
+<body>
+    <br>
+    <br>
+    <div class="container bootdey">
+        <div class="email-app">
+            <main>
+                <p class="text-center"><i class="fa fa-envelope"></i> Compose New Message</p>
+                <form action="https://owenchen.cf/compose" method="post" enctype="multipart/form-data"
+                    onsubmit="return get_AttrsList()">
+                    <div class="form-row mb-3">
+                        <label for="to" class="col-2 col-sm-1 col-form-label">To:</label>
+                        <div class="col-10 col-sm-11">
+                            <input name="to" type="email" class="form-control" id="to" placeholder="example@gmail.com"
+                                required>
+                        </div>
+                    </div>
+                    <div class="form-row mb-3">
+                        <label for="cc" class="col-2 col-sm-1 col-form-label">Cc:</label>
+                        <div class="col-10 col-sm-11">
+                            <input name="cc" type="email" class="form-control" id="cc"
+                                placeholder="example1@gmail.com, example2@gmail.com" multiple>
+                        </div>
+                    </div>
+                    <div class="form-row mb-3">
+                        <label for="subject" class="col-2 col-sm-1 col-form-label">Subject:</label>
+                        <div class="col-10 col-sm-11">
+                            <input name="subject" type="text" class="form-control" id="subject"
+                                onkeyup="push_to_parser(this.value)" placeholder="Type subject" required>
+                            <input type="hidden" id="AttrsList" name="AttrsList[]" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-3">
+                        <label for="attributes" class="col-2 col-sm-1 col-form-label">Attributes:</label>
+                        <div id="attr-cloud" class="left-margin area-flex dad-selector">
+                        </div>
+                    </div>
+                    <div class="form-row mb-3">
+                        <label class="col-2 col-sm-1 col-form-label"></label>
+                        <div class="col-10 col-sm-5">
+                            <div class="left-margin area-delete dad-selector"></div>
+                        </div>
+                    </div>
+                    <div class="form-row mb-3">
+                        <label for="new-add-attr" class="col-2 col-sm-1 col-form-label">Customize:</label>
+                        <div class="left-margin">
+                            <input id="add-attr" name="new-add-attr" type="text" class="form-control" id="attr"
+                                placeholder="Type an attribute">
+                            <button id="add" type="button" class="add-button">add</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-11 ml-auto">
+                            <div class="form-group mt-4">
+                                <textarea class="form-control" id="message" name="message" rows="12"
+                                    placeholder="Click here to reply"></textarea>
+                            </div>
+                            <div class="toolbar" role="toolbar">
+                                <button id="upload" type="button" class="btn btn-light">
+                                    <span class="fa fa-paperclip"> upload attachments</span>
+                                </button>
+                                <button id="cancel" type="button" class="btn btn-light">
+                                    <span class="fa fa-trash-o"> delete attachments</span>
+                                </button>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">
+                                        <span class="fa fa-tags"> add tags</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#">add label <span class="badge badge-danger">
+                                                Home</span></a>
+                                        <a class="dropdown-item" href="#">add label <span class="badge badge-info">
+                                                Job</span></a>
+                                        <a class="dropdown-item" href="#">add label <span class="badge badge-success">
+                                                Clients</span></a>
+                                        <a class="dropdown-item" href="#">add label <span class="badge badge-warning">
+                                                News</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-4">
+                                <input name="attachments[]" type="file" id="file-uploader" multiple="multiple"
+                                    style="display: none;" />
+                            </div>
+                            <div class="form-group mt-4 email-attachments">
+                                <ul class="att-list">
+                                </ul>
+                            </div>
+                            <div class="form-group mt-4"></div>
+                            <div class="form-group">
+                                <input type="hidden" id="token" name="Cookies_token" value="{{ token }}">
+                                <input type="hidden" id="refresh_token" name="Cookies_refresh_token"
+                                    value="{{ refresh_token }}">
+                                <button id="send_button" type="submit" class="btn btn-success">Send</button>
+                                <button type="button" class="btn btn-danger">
+                                    <a href="https://nsysunmail.ml/">Discard</a>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/compose.js') }}"></script>
+
+</body>
+
+</html>
