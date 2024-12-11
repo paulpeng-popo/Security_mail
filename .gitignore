@@ -1,3 +1,4 @@
 live2d/
-autoscp
-*.mp4
+flask/attachments/
+**/.mp4
+**/.DS_Store
