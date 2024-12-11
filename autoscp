@@ -1,0 +1,37 @@
+#!/usr/bin/bash
+
+SSH_PATH="ubuntu@3.114.152.126:~/"
+
+trap exit_process SIGINT
+exit_process() {
+    echo
+    echo ${#monitor_files[@]} Watchers removed.
+    exit
+}
+
+Watcher() {
+    file=$1
+    echo Add $file watcher successfully.
+    DIR="$(dirname "$file")"
+    REMOTE_PATH=${SSH_PATH}${DIR:2}
+    
+    time=$(date -r $file +%s)
+    while true
+    do
+        check_time=$(date -r $file +%s)
+        if [ $check_time != $time ]; then
+            scp $file $REMOTE_PATH
+            time=$check_time
+        fi
+        sleep 3
+    done
+}
+
+monitor_files=\
+$(find . -path ./live2d -prune -false -o -path ./ckeditor5 -prune -false -o -name *.py -o -name *.html -o -name *.css -o -name *.js -o -name *.txt)
+for f in $monitor_files; do
+    Watcher $f &
+done
+monitor_files=($monitor_files)
+echo Total files ${#monitor_files[@]}
+wait
